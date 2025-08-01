@@ -1,30 +1,26 @@
 ﻿using System.Collections;
+using Juke.Querying;
 
 namespace Juke.Common;
 
-public class ChildList<T, P> : IList<T>
-where T : class, IChild<P> 
-where P : class {
-    private readonly List<T> _list = [];
-    private P? _owner;
 
+public class ChildList<P, T> : IList<T>
+    where P: class
+    where T : IChild<P> {
+    private readonly IList<T> _list = [];
+
+    public ChildList(P owner) {
+        Owner = owner;
+    }
     private void Charge(T item) {
-        item.Parent = _owner;
+        item.Parent = Owner;
     }
 
     private void Discharge(T item) {
         item.Parent = null;
     }
     
-    private P? Owner {
-        get => _owner;
-        set {
-            _owner = value;
-            foreach (var item in _list) {
-                Charge(item);
-            }
-        }
-    }
+    public P Owner { get; }
 
     public IEnumerator<T> GetEnumerator() {
         return _list.GetEnumerator();
