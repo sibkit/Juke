@@ -3,8 +3,6 @@
 namespace Juke.Tests;
 
 public class EntityMapTest {
-
-
     public class CompanyMapper : EntityMapper<Company> {
         public override object? ReadValue(Company entity, FieldMap fieldMap) {
             return fieldMap.FieldName switch {

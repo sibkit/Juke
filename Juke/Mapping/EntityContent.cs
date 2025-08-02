@@ -32,12 +32,12 @@ public class EntityContent {
         };
     }
 
-    public void SetFieldValue<T>(int fieldIndex, T value) {
+    public void SetFieldValue(int fieldIndex, object? value) {
         _fieldValues[fieldIndex] = value;
     }
 
-    public T? GetFieldValue<T>(int fieldIndex) {
-        return (T?)_fieldValues[fieldIndex];
+    public object? GetFieldValue(int fieldIndex) {
+        return _fieldValues[fieldIndex];
     }
 
     public override bool Equals(object? obj) {

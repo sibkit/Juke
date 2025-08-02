@@ -27,7 +27,7 @@ public class FunctionField : Field {
 
 public class LinkField : Field {
     public required string Name { get; init; }
-    public required string SourceAlias { get; init; }
+    public string? SourceAlias { get; init; }
 }
 
 public class QueryField : Field {

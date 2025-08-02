@@ -2,7 +2,7 @@
 
 public class EntityMap {
     private readonly Dictionary<string, int> _fieldIndexes = new();
-    public int[] KeyIndexes { get; init; }
+    public int[] KeyIndexes { get; private set; }
     private string[]? _fieldNames;
 
     private readonly FieldMap[] _fieldMaps;
