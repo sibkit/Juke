@@ -1,6 +1,6 @@
 ﻿namespace Juke.Mapping;
 
 public class SequenceMap {
-    public string SequenceName { get; init; }
-    public string DbSequenceName { get; init; }
+    public required string SequenceName { get; init; }
+    public required string DbSequenceName { get; init; }
 }

@@ -5,8 +5,8 @@ namespace Juke.Common;
 
 
 public class ChildList<P, T> : IList<T>
-    where P: class
-    where T : IChild<P> {
+    where P: QueryElement
+    where T: QueryElement, IChild<P> {
     private readonly IList<T> _list = [];
 
     public ChildList(P owner) {

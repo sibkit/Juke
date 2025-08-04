@@ -1,5 +1,7 @@
-﻿namespace Juke.Common;
+﻿using Juke.Querying;
+
+namespace Juke.Common;
 
 public interface IChild<T> {
-    T Parent { get; set; }
+    QueryElement? Parent { get; set; }
 }

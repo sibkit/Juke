@@ -5,8 +5,8 @@ namespace Juke.Mapping;
 public class EntityKey {
     public KeyValue[] Values { get; init; }
 
-    public override bool Equals(object obj) {
-        if (base.Equals(obj))
+    public override bool Equals(object? obj) {
+        if (object.Equals(this, obj))
             return true;
         if (obj is EntityKey ek) {
             return Equals(ek);

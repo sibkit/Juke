@@ -2,7 +2,7 @@
 
 public class EntityMap {
     private readonly Dictionary<string, int> _fieldIndexes = new();
-    public int[] KeyIndexes { get; private set; }
+    public int[] KeyIndexes { get; private set; } = null!;
     private string[]? _fieldNames;
 
     private readonly FieldMap[] _fieldMaps;
@@ -59,8 +59,4 @@ public class EntityMap {
         }
         throw new KeyNotFoundException($"Field {fieldName} not found");
     }
-    
-
-    
-    
 }
