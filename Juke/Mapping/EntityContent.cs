@@ -28,7 +28,8 @@ public class EntityContent {
             };
         }
         return new EntityKey {
-            Values = values
+            Values = values,
+            EntityMap = EntityMap
         };
     }
 

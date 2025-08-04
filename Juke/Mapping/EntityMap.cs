@@ -15,7 +15,6 @@ public class EntityMap {
             for (var i = 0; i < _fieldMaps.Length; i++) {
                 var fm = _fieldMaps[i];
                 _fieldIndexes.Add(fm.FieldName, i);
-                //fm.EntityMap = this;
                 fm.Index = i;
                 if(fm.IsKeyField)
                     keys.Add(i);
