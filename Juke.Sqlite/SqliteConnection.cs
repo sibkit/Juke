@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using System.Numerics;
-using Juke.Database;
+using Juke.Accessing;
 using Juke.Mapping;
 using Juke.Querying;
 using AdoSqlite = Microsoft.Data.Sqlite;

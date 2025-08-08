@@ -1,6 +1,6 @@
 ﻿using Juke.Mapping;
 
-namespace Juke.Database;
+namespace Juke.Accessing;
 
 
 public interface IEntityOperation {}

@@ -19,7 +19,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Juke.Sqlite\Juke.Sqlite.csproj" />
       <ProjectReference Include="..\Juke\Juke.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="sqlite.db">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

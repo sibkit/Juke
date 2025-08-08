@@ -8,7 +8,7 @@ public class MappingData {
     private readonly Dictionary<Type, IEntityMapper> mappersByType = new();
     private readonly Dictionary<string, SequenceMap> sequencesMap = new();
     
-    public ICollection<IEntityMapper> Mappers => mappersByName.Values;
+    public IReadOnlyCollection<IEntityMapper> Mappers => mappersByName.Values;
 
     public void RegisterSequence(SequenceMap sequenceMap) {
         sequencesMap.Add(sequenceMap.SequenceName, sequenceMap);

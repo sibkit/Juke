@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Juke.Database;
+namespace Juke.Accessing;
 
 public interface ISequence<out T>
     where T: struct, INumber<T>{

@@ -1,6 +1,4 @@
-﻿using Juke.Database;
-
-namespace Juke.Ado.Net;
+﻿namespace Juke.Ado.Net;
 
 // public class AdoTransaction: ITransaction {
 //     public void Begin() {

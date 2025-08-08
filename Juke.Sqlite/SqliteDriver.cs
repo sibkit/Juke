@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using Juke.Database;
+using Juke.Accessing;
 using Juke.Mapping;
 using AdoSqlite = Microsoft.Data.Sqlite;
 
@@ -12,7 +12,7 @@ public class SqliteDriver: IDatabaseDriver {
     public SqlBuilder SqlBuilder { get; init; } = new SqlBuilder();
 
     public required string ConnectionString { get; init; }
-    public SequencesInfo? SequencesInfo { get; init; }
+    public SequencesTableInfo? SequencesTableInfo { get; init; }
     
     public AdoSqlite.SqliteConnection SequenceConnection {
         get {
@@ -37,9 +37,9 @@ public class SqliteDriver: IDatabaseDriver {
         if(_secuencesMap.TryGetValue(map.DbSequenceName, out var value)) {
             return value as ISequence<T> ?? throw new InvalidOperationException();
         }
-        if(SequencesInfo == null)
+        if(SequencesTableInfo == null)
             throw new Exception($"Sequence info is null");
-        value = new SqliteSequence<T>(map, _sequenceConnection ?? throw new Exception("SqlDriver: GetSequence"), SequencesInfo);
+        value = new SqliteSequence<T>(map, _sequenceConnection ?? throw new Exception("SqlDriver: GetSequence"), SequencesTableInfo);
         _secuencesMap.Add(map.DbSequenceName, value);
         return value as ISequence<T> ?? throw new InvalidOperationException();
     }

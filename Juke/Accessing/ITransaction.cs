@@ -1,4 +1,4 @@
-﻿namespace Juke.Database;
+﻿namespace Juke.Accessing;
 
 public enum TransactionState {
     Opened,

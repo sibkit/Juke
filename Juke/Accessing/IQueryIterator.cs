@@ -1,6 +1,6 @@
 ﻿using Juke.Querying;
 
-namespace Juke.Database;
+namespace Juke.Accessing;
 
 public interface IQueryIterator: IEnumerator<object?[]> {
     Query Query { get; }

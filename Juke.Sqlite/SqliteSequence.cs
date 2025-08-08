@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Numerics;
 using System.Text;
-using Juke.Database;
+using Juke.Accessing;
 using Juke.Mapping;
 using AdoSqlite = Microsoft.Data.Sqlite;
 
@@ -18,21 +18,21 @@ public class SqliteSequence<T>: ISequence<T>, ISqliteSequence
 {
     private readonly AdoSqlite.SqliteConnection _sequenceConnection;
     private readonly SequenceMap _sequenceMap;
-    private readonly SequencesInfo  _sequencesInfo;
+    private readonly SequencesTableInfo  _sequencesTableInfo;
     
     private T? _currentValue;
     
-    public SqliteSequence(SequenceMap sequenceMap, AdoSqlite.SqliteConnection sequenceConnection, SequencesInfo sequencesInfo) {
+    public SqliteSequence(SequenceMap sequenceMap, AdoSqlite.SqliteConnection sequenceConnection, SequencesTableInfo sequencesTableInfo) {
         _sequenceMap = sequenceMap;
         _sequenceConnection = sequenceConnection;
-        _sequencesInfo = sequencesInfo;
+        _sequencesTableInfo = sequencesTableInfo;
     }
 
     public string Name => _sequenceMap.SequenceName;
     
     private T ReadFromDb() {
         var command = _sequenceConnection.CreateCommand();
-        command.CommandText = "SELECT " + _sequencesInfo.ValueColumn + " FROM " + _sequencesInfo.TableName + " WHERE " + _sequencesInfo.NameColumn + " = " + _sequenceMap.DbSequenceName;
+        command.CommandText = "SELECT " + _sequencesTableInfo.ValueColumn + " FROM " + _sequencesTableInfo.TableName + " WHERE " + _sequencesTableInfo.NameColumn + " = " + _sequenceMap.DbSequenceName;
         var reader = command.ExecuteReader();
         var rows = new ArrayList(1);
         while (reader.Read()) {
@@ -55,11 +55,11 @@ public class SqliteSequence<T>: ISequence<T>, ISqliteSequence
         if (_insertCommand == null) {
             _insertCommand = _sequenceConnection.CreateCommand();
             var sb = new StringBuilder("INSERT INTO ");
-            sb.Append(_sequencesInfo.TableName);
+            sb.Append(_sequencesTableInfo.TableName);
             sb.Append(" ( ");
-            sb.Append(_sequencesInfo.NameColumn);
+            sb.Append(_sequencesTableInfo.NameColumn);
             sb.Append(", ");
-            sb.Append(_sequencesInfo.ValueColumn);
+            sb.Append(_sequencesTableInfo.ValueColumn);
             sb.Append(") VALUES (");
             sb.Append(_sequenceMap.DbSequenceName);
             sb.Append(", @s)");
@@ -83,11 +83,11 @@ public class SqliteSequence<T>: ISequence<T>, ISqliteSequence
         if (_updateCommand == null) {
             _updateCommand = _sequenceConnection.CreateCommand();
             var sb = new StringBuilder("UPDATE ");
-            sb.Append(_sequencesInfo.TableName);
+            sb.Append(_sequencesTableInfo.TableName);
             sb.Append(" SET ");
-            sb.Append(_sequencesInfo.ValueColumn);
+            sb.Append(_sequencesTableInfo.ValueColumn);
             sb.Append(" = @s WHERE");
-            sb.Append(_sequencesInfo.NameColumn);
+            sb.Append(_sequencesTableInfo.NameColumn);
             sb.Append(" = ");
             sb.Append(_sequenceMap.DbSequenceName);
             _updateCommand.CommandText = sb.ToString();

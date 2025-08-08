@@ -1,9 +1,8 @@
-﻿using System.Data;
-using System.Numerics;
+﻿using System.Numerics;
 using Juke.Mapping;
 using Juke.Querying;
 
-namespace Juke.Database;
+namespace Juke.Accessing;
 
 public interface IConnection {
     void Close();
