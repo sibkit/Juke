@@ -10,11 +10,8 @@ public class MappingData {
     
     public ICollection<IEntityMapper> Mappers => mappersByName.Values;
 
-    public void RegisterSequence(string sequenceName, string dbSequenceName) {
-        sequencesMap.Add(sequenceName, new SequenceMap {
-            SequenceName = sequenceName,
-            DbSequenceName = dbSequenceName
-        });
+    public void RegisterSequence(SequenceMap sequenceMap) {
+        sequencesMap.Add(sequenceMap.SequenceName, sequenceMap);
     }
 
     public SequenceMap SequenceMap(string sequenceName) {

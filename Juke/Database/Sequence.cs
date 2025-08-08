@@ -1,16 +1,10 @@
-﻿namespace Juke.Database;
+﻿using System.Numerics;
 
-public interface ISequence<out T> {
-    string Name { get; }
+namespace Juke.Database;
+
+public interface ISequence<out T>
+    where T: struct, INumber<T>{
+    string Name { get;}
     T NextValue();
     T CurrentValue();
-}
-
-public enum SequenceOperationType
-{
-    NextValue, CurrentValue
-}
-
-public class SequenceOperation {
-    
 }

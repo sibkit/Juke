@@ -4,7 +4,7 @@ using Juke.Querying;
 namespace Juke.Common;
 
 
-public class ChildList<P, T> : IList<T>
+public class ChildList<P,T> : IList<T>
     where P: QueryElement
     where T: QueryElement, IChild<P> {
     private readonly IList<T> _list = [];

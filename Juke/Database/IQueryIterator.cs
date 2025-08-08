@@ -2,6 +2,6 @@
 
 namespace Juke.Database;
 
-public interface IDatabaseIterator: IEnumerator<object?[]> {
+public interface IQueryIterator: IEnumerator<object?[]> {
     Query Query { get; }
 }

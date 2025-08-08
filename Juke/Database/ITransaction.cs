@@ -7,8 +7,10 @@ public enum TransactionState {
     Closed
 }
 public interface ITransaction {
-    void Begin();
     void Commit();
     void Rollback();
     TransactionState State { get; }
+
+    // IEntityOperation[] GetOperations();
+    event EventHandler<(TransactionState oldState, TransactionState newState)> StateChanged; 
 }

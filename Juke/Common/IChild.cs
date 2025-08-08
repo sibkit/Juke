@@ -2,6 +2,7 @@
 
 namespace Juke.Common;
 
-public interface IChild<T> {
-    QueryElement? Parent { get; set; }
+public interface IChild<T>
+where T: QueryElement{
+    T? Parent { get; set;  }
 }
