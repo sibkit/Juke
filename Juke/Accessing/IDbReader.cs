@@ -2,6 +2,6 @@
 
 namespace Juke.Accessing;
 
-public interface IQueryIterator: IEnumerator<object?[]> {
+public interface IDbEnumerable: IEnumerable<object?[]> {
     Query Query { get; }
 }

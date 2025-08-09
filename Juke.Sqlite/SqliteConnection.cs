@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections;
+using System.Data;
 using System.Numerics;
 using Juke.Accessing;
 using Juke.Mapping;
@@ -7,15 +8,18 @@ using AdoSqlite = Microsoft.Data.Sqlite;
 
 namespace Juke.Sqlite;
 
+
+
 public class SqliteConnection: IConnection {
 
     private readonly AdoSqlite.SqliteConnection _adoConnection;
-    private SqliteTransaction? _currentTransaction = null;
+    private SqliteTransaction? _currentTransaction;
     private readonly SqliteDriver _driver;
     
     internal SqliteConnection(SqliteDriver driver, AdoSqlite.SqliteConnection adoConnection) {
         _driver = driver;
         _adoConnection = adoConnection;
+        _adoConnection.Open();
     }
     
     public void Close() {
@@ -46,7 +50,14 @@ public class SqliteConnection: IConnection {
         return _driver.GetSequence<T>(map);
         
     }
-    public IQueryIterator Iterate(Query query) {
-        throw new NotImplementedException();
+
+    private IEnumerable<object?[]> Convert(IEnumerable source) {
+        foreach (var item in source) {
+            yield return (object?[])item;
+        }
+    }
+    public IEnumerable<object?[]> GetReader(Query query) {
+        var command = _adoConnection.CreateCommand();
+        return Convert(command.ExecuteReader()) ;
     }
 }

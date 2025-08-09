@@ -75,7 +75,7 @@ public class LinkManager {
         }
         switch (source.Query) {
             case EntityQuery eq:
-                var map = _mappingData.Mapper(eq.EntityName).Map;
+                var map = _mappingData.GetMapper(eq.EntityName).Map;
                 foreach (var fm in map.FieldMaps) {
                     result.Add(new NameTarget {
                         FieldName = fm.FieldName,

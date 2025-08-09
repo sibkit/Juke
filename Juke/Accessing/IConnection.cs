@@ -15,5 +15,5 @@ public interface IConnection {
     event EventHandler BeforeOperationExecute;
     ISequence<T> GetSequence<T>(SequenceMap map) 
         where T : struct, INumber<T>;
-    IQueryIterator Iterate(Query query);
+    IEnumerable<object?[]> GetReader(Query query);
 }

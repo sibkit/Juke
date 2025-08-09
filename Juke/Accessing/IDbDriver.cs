@@ -1,6 +1,6 @@
 ﻿namespace Juke.Accessing;
 
-public interface IDatabaseDriver {
+public interface IDbDriver {
     MappingData MappingData { get; init; }
     IConnection createConnection();
 }

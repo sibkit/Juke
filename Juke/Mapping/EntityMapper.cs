@@ -37,7 +37,7 @@ public abstract class EntityMapper<T> : IEntityMapper
         get { return _map ??= CreateMap(); }
     }
 
-    public EntityContent BuildContent(object[] resultValues) {
+    public EntityContent BuildContent(object?[] resultValues) {
         var result = new EntityContent(Map);
         if (resultValues.Length != Map.FieldNames.Length)
             throw new Exception("EntityMapper: BuildContent");

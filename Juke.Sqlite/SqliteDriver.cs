@@ -5,7 +5,7 @@ using AdoSqlite = Microsoft.Data.Sqlite;
 
 namespace Juke.Sqlite;
 
-public class SqliteDriver: IDatabaseDriver {
+public class SqliteDriver: IDbDriver {
     private AdoSqlite.SqliteConnection? _sequenceConnection;
     
     public required MappingData MappingData { get; init; }

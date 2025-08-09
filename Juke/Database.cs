@@ -3,10 +3,23 @@
 namespace Juke;
 
 public class Database {
-    public Database(IDatabaseDriver driver) {
+    public Database(IDbDriver driver) {
        Driver = driver;
     }
 
-    private IDatabaseDriver Driver { get; }
+    public IDbDriver Driver { get; }
 
+    private readonly List<Session> _activeSessions = [];
+
+    public IReadOnlyList<Session> ActiveSessions => _activeSessions;
+
+    public Session CreateSession() {
+        var result = new Session(Driver.createConnection(), this);
+        _activeSessions.Add(result);
+        return result;
+    }
+
+    internal void RemoveSession(Session session) {
+        _activeSessions.Remove(session);
+    }
 }

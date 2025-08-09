@@ -28,11 +28,11 @@ public class MappingData {
         mappersByType.Remove(mapper.EntityType);
     }
 
-    public IEntityMapper Mapper(string entityName) {
+    public IEntityMapper GetMapper(string entityName) {
         return mappersByName[entityName];
     }
 
-    public IEntityMapper Mapper(Type entityType) {
+    public IEntityMapper GetMapper(Type entityType) {
         return mappersByType[entityType];
     }
 
