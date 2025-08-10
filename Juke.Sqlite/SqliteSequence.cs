@@ -32,7 +32,7 @@ public class SqliteSequence<T>: ISequence<T>, ISqliteSequence
     
     private T ReadFromDb() {
         var command = _sequenceConnection.CreateCommand();
-        command.CommandText = "SELECT " + _sequencesTableInfo.ValueColumn + " FROM " + _sequencesTableInfo.TableName + " WHERE " + _sequencesTableInfo.NameColumn + " = " + _sequenceMap.DbSequenceName;
+        command.CommandText = "SELECT " + _sequencesTableInfo.ValueColumn + " FROM " + _sequencesTableInfo.TableName + " WHERE " + _sequencesTableInfo.NameColumn + " = '" + _sequenceMap.DbSequenceName +"'";
         var reader = command.ExecuteReader();
         var rows = new ArrayList(1);
         while (reader.Read()) {
@@ -60,9 +60,9 @@ public class SqliteSequence<T>: ISequence<T>, ISqliteSequence
             sb.Append(_sequencesTableInfo.NameColumn);
             sb.Append(", ");
             sb.Append(_sequencesTableInfo.ValueColumn);
-            sb.Append(") VALUES (");
+            sb.Append(") VALUES ('");
             sb.Append(_sequenceMap.DbSequenceName);
-            sb.Append(", @s)");
+            sb.Append("', @s)");
             _insertCommand.CommandText = sb.ToString();
         } else
             _insertCommand.Parameters.Clear();
@@ -86,10 +86,11 @@ public class SqliteSequence<T>: ISequence<T>, ISqliteSequence
             sb.Append(_sequencesTableInfo.TableName);
             sb.Append(" SET ");
             sb.Append(_sequencesTableInfo.ValueColumn);
-            sb.Append(" = @s WHERE");
+            sb.Append(" = @s WHERE ");
             sb.Append(_sequencesTableInfo.NameColumn);
-            sb.Append(" = ");
+            sb.Append(" = '");
             sb.Append(_sequenceMap.DbSequenceName);
+            sb.Append('\'');
             _updateCommand.CommandText = sb.ToString();
         } else
             _updateCommand.Parameters.Clear();

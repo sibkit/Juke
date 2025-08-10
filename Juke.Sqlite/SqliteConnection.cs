@@ -51,13 +51,14 @@ public class SqliteConnection: IConnection {
         
     }
 
-    private IEnumerable<object?[]> Convert(IEnumerable source) {
+    private static IEnumerable<object?[]> Convert(IEnumerable source) {
         foreach (var item in source) {
             yield return (object?[])item;
         }
     }
     public IEnumerable<object?[]> GetReader(Query query) {
         var command = _adoConnection.CreateCommand();
-        return Convert(command.ExecuteReader()) ;
+        //command.CommandText = 
+        return Convert(command.ExecuteReader());
     }
 }

@@ -1,10 +1,11 @@
-﻿using Juke.Accessing;
+﻿using System.Numerics;
+using Juke.Accessing;
 using Juke.Mapping;
 using Juke.Querying;
 
 namespace Juke;
 
-public class Session {
+public class Session: IDisposable {
     public Session(IConnection connection, Database database) {
         Connection = connection;
         Database = database;
@@ -35,5 +36,22 @@ public class Session {
 
     public IEnumerable<object?[]> GetQueryReader(Query query) {
         return Connection.GetReader(query);
+    }
+    
+    public ISequence<T> GetSequence<T>(string sequenceName) where T : struct, INumber<T> {
+        return Connection.GetSequence<T>(Database.Driver.MappingData.SequenceMap(sequenceName));
+    }
+
+    public void Insert<T>(T entity) where T : class, new() {
+        var mapper = Database.Driver.MappingData.GetMapper(typeof(T));
+        var content = new EntityContent(mapper.Map);
+        mapper.BindToContent(entity, content);
+        Connection.ExecuteOperation(new InsertEntityOperation {
+            Content = content
+        });
+    }
+    
+    public void Dispose() {
+        Connection.Close();
     }
 }

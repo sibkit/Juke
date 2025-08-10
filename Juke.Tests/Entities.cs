@@ -3,7 +3,7 @@
 namespace Juke.Tests;
 
 public class Company {
-    public uint? ID { get; set; }
+    public long? ID { get; set; }
     public string? Name { get; set; }
 }
 

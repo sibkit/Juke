@@ -39,7 +39,7 @@ public class SqliteDriver: IDbDriver {
         }
         if(SequencesTableInfo == null)
             throw new Exception($"Sequence info is null");
-        value = new SqliteSequence<T>(map, _sequenceConnection ?? throw new Exception("SqlDriver: GetSequence"), SequencesTableInfo);
+        value = new SqliteSequence<T>(map, SequenceConnection ?? throw new Exception("SqlDriver: GetSequence"), SequencesTableInfo);
         _secuencesMap.Add(map.DbSequenceName, value);
         return value as ISequence<T> ?? throw new InvalidOperationException();
     }
