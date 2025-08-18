@@ -3,7 +3,7 @@
 namespace Juke.Mapping;
 
 public class EntityKey {
-    public required EntityMap EntityMap { get; init; }
+    //public required EntityMap EntityMap { get; init; }
     public required KeyValue[] Values { get; init; }
 
     public override bool Equals(object? obj) {

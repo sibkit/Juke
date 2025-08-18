@@ -1,4 +1,4 @@
-﻿namespace Juke.Querying;
+﻿namespace Juke;
 
 public enum QueryResultType {
     Entity,

@@ -17,6 +17,9 @@ public abstract class EntityMapper<T> : IEntityMapper
     public abstract object? ReadValue(T entity, FieldMap fieldMap);
     public abstract void WriteValue(T entity, FieldMap fieldMap, object? value);
 
+    
+
+    
     protected abstract EntityMap CreateMap();
     
     public void BindToEntity(EntityContent content, T entity) {

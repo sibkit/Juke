@@ -38,19 +38,14 @@ public class SqliteTest {
         var db = new Database(driver);
         var session = db.CreateSession();
 
-        var qCompanies = new EntityQuery {
-            EntityName = "Company",
-        };
-
-
+        var qCompanies = new EntityQuery<Company>();
         
-        var companies = session.GetQueryReader<Company>(qCompanies);
+        var companies = session.Read<Company>(qCompanies);
         foreach (var company in companies) {
             _testOutputHelper.WriteLine(company.Name);
         }
     }
-
-
+    
     [Fact]
     public void TestCommandsText() {
         var mappingData = new MappingData();
@@ -97,5 +92,19 @@ public class SqliteTest {
             ID = seq.NextValue(),
             Name = "Chrysler",
         });
+
+        var qCompanies = new EntityQuery<Company>{
+            Condition = new LikeCondition {
+                LeftField = new LinkField("Name"),
+                RightField = new ValueField("BM%")
+            }
+        };
+        var companies = session.Read<Company>(qCompanies);
+        
+        foreach (var company in companies) {
+            _testOutputHelper.WriteLine($"{company.ID} - {company.Name};");
+        }
+        
+        
     }
 }

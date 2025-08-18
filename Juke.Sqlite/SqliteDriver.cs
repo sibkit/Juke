@@ -9,7 +9,7 @@ public class SqliteDriver: IDbDriver {
     private AdoSqlite.SqliteConnection? _sequenceConnection;
     
     public required MappingData MappingData { get; init; }
-    public SqlBuilder SqlBuilder { get; init; } = new SqlBuilder();
+    //public CommandBuilder CommandBuilder { get; init; } = new CommandBuilder();
 
     public required string ConnectionString { get; init; }
     public SequencesTableInfo? SequencesTableInfo { get; init; }

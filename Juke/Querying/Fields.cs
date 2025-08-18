@@ -26,8 +26,23 @@ public class FunctionField : Field {
 }
 
 public class LinkField : Field {
-    public required string Name { get; init; }
+    public string TargetFieldName { get; init; }
     public string? SourceAlias { get; init; }
+
+    public LinkField(string targetFieldName) {
+        TargetFieldName = targetFieldName;
+    }
+    
+    public LinkField(string sourceAlias, string targetFieldName) {
+        TargetFieldName = targetFieldName;
+        SourceAlias = sourceAlias;
+    }
+    
+    public override string ToString() {
+        return SourceAlias!=null ? 
+            $"{SourceAlias}.{TargetFieldName}" : 
+            $"{TargetFieldName}";
+    }
 }
 
 public class QueryField : Field {
@@ -43,5 +58,8 @@ public class QueryField : Field {
 }
 
 public class ValueField : Field {
+    public ValueField(object? value) {
+        Value = value;
+    }
     public object? Value { get; set; }
 }

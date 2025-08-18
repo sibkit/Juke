@@ -29,7 +29,6 @@ public class EntityContent {
         }
         return new EntityKey {
             Values = values,
-            EntityMap = EntityMap
         };
     }
 

@@ -36,14 +36,14 @@ public class MappingData {
         return mappersByType[entityType];
     }
 
-    public void CompleteQuery(Query query) {
-        if (query is EntityQuery { Fields.Count: 0 } eq) {
-            var mapper = mappersByName[eq.EntityName];
-            foreach (var fieldName in mapper.Map.FieldNames) {
-                eq.Fields.Add(new LinkField {
-                    Name = fieldName
-                });
-            }
-        }
-    }
+    // public void CompleteQuery(Query query) {
+    //     if (query is IEntityQuery { Fields.Count: 0 } eq) {
+    //         var mapper = mappersByName[eq.EntityName];
+    //         foreach (var fieldName in mapper.Map.FieldNames) {
+    //             eq.Fields.Add(new LinkField {
+    //                 Name = fieldName
+    //             });
+    //         }
+    //     }
+    // }
 }

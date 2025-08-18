@@ -1,20 +1,28 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text;
 using Juke.Accessing;
-using Juke.Ado.Net.Sql;
 using Juke.Mapping;
 using Juke.Querying;
+using Juke.Sqlite.Sql;
 using AdoSqlite = Microsoft.Data.Sqlite;
 
 namespace Juke.Sqlite;
 
-public class SqlBuilder {
-    
-    public AdoSqlite.SqliteCommand BuildQueryCommand(Query query, AdoSqlite.SqliteConnection sqliteConnection) {
-        
-        throw new NotImplementedException();
+public class CommandBuilder {
+    public CommandBuilder(MappingData mappingData) {
+        SqlBuilder = new SqlBuilder {
+            MappingData = mappingData
+        };
     }
-    
+
+    public MappingData MappingData => SqlBuilder.MappingData;
+    public SqlBuilder SqlBuilder { get; }
+
+    public AdoSqlite.SqliteCommand BuildQueryCommand(Query query, AdoSqlite.SqliteConnection sqliteConnection) {
+        var cmd = sqliteConnection.CreateCommand();
+        cmd.CommandText = SqlBuilder.BuildQuery(query).ToString();
+        return cmd;
+    }
     
     public AdoSqlite.SqliteCommand BuildOperationCommand(IEntityOperation operation, AdoSqlite.SqliteConnection sqliteConnection) {
         switch (operation) {
@@ -77,7 +85,7 @@ public class SqlBuilder {
             }
 
             case DeleteEntityOperation delete: {
-                var map = delete.Key.EntityMap;
+                var map = MappingData.GetMapper(delete.EntityType).Map;
                 var sb = new StringBuilder("DELETE FROM ");
                 sb.Append(map.DbTableName);
                 sb.Append(" WHERE ");

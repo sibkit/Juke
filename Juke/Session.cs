@@ -29,12 +29,18 @@ public class Session: IDisposable {
         }
     }
 
-    public IEnumerable<T> GetQueryReader<T>(Query query) where T : class, new() {
+    public IEnumerable<T> Read<T>() where T : class, new() {
+        var query = new EntityQuery<T> ();
+        var reader = Connection.GetReader(query);
+        return Convert<T>(reader);
+    }
+    
+    public IEnumerable<T> Read<T>(Query query) where T : class, new() {
         var reader = Connection.GetReader(query);
         return Convert<T>(reader);
     }
 
-    public IEnumerable<object?[]> GetQueryReader(Query query) {
+    public IEnumerable<object?[]> Read(Query query) {
         return Connection.GetReader(query);
     }
     
@@ -47,6 +53,7 @@ public class Session: IDisposable {
         var content = new EntityContent(mapper.Map);
         mapper.BindToContent(entity, content);
         Connection.ExecuteOperation(new InsertEntityOperation {
+            EntityType = typeof(T),
             Content = content
         });
     }

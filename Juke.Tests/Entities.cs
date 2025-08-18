@@ -5,12 +5,14 @@ namespace Juke.Tests;
 public class Company {
     public long? ID { get; set; }
     public string? Name { get; set; }
+    public string? Country { get; set; }
 }
 
 public class Contact {
-    public uint? ID { get; set; }
-    public uint? CompanyID { get; set; }
+    public long? ID { get; set; }
+    public long? CompanyID { get; set; }
     public string? Name { get; set; }
+    public string? Post { get; set; }
 }
 
 public class ContactItem {

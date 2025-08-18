@@ -8,13 +8,18 @@ using AdoSqlite = Microsoft.Data.Sqlite;
 
 namespace Juke.Sqlite;
 
-
-
 public class SqliteConnection: IConnection {
 
     private readonly AdoSqlite.SqliteConnection _adoConnection;
     private SqliteTransaction? _currentTransaction;
     private readonly SqliteDriver _driver;
+    private CommandBuilder? _commandBuilder;
+
+    private CommandBuilder CommandBuilder {
+        get {
+            return _commandBuilder ??= new CommandBuilder(_driver.MappingData);
+        }
+    }
     
     internal SqliteConnection(SqliteDriver driver, AdoSqlite.SqliteConnection adoConnection) {
         _driver = driver;
@@ -38,7 +43,7 @@ public class SqliteConnection: IConnection {
 
     public void ExecuteOperation(IEntityOperation operation) {
         BeforeOperationExecute?.Invoke(this, EventArgs.Empty);
-        var command = _driver.SqlBuilder.BuildOperationCommand(operation, _adoConnection);
+        var command = CommandBuilder.BuildOperationCommand(operation, _adoConnection);
         command.ExecuteNonQuery();
         AfterOperationExecute?.Invoke(this, EventArgs.Empty);
     }
@@ -51,14 +56,15 @@ public class SqliteConnection: IConnection {
         
     }
 
-    private static IEnumerable<object?[]> Convert(IEnumerable source) {
-        foreach (var item in source) {
-            yield return (object?[])item;
+    private static IEnumerable<object?[]> Convert(AdoSqlite.SqliteDataReader reader) {
+        while (reader.Read()) {
+            var row = new object?[reader.FieldCount];
+            reader.GetValues(row);
+            yield return row;
         }
     }
     public IEnumerable<object?[]> GetReader(Query query) {
-        var command = _adoConnection.CreateCommand();
-        //command.CommandText = 
+        var command = CommandBuilder.BuildQueryCommand(query, _adoConnection);
         return Convert(command.ExecuteReader());
     }
 }
