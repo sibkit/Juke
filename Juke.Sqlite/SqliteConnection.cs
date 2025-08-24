@@ -65,6 +65,7 @@ public class SqliteConnection: IConnection {
     }
     public IEnumerable<object?[]> GetReader(Query query) {
         var command = CommandBuilder.BuildQueryCommand(query, _adoConnection);
+        Console.WriteLine(command.CommandText);
         return Convert(command.ExecuteReader());
     }
 }

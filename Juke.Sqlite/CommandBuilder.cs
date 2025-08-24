@@ -10,17 +10,15 @@ namespace Juke.Sqlite;
 
 public class CommandBuilder {
     public CommandBuilder(MappingData mappingData) {
-        SqlBuilder = new SqlBuilder {
-            MappingData = mappingData
-        };
+        MappingData = mappingData;
     }
 
-    public MappingData MappingData => SqlBuilder.MappingData;
-    public SqlBuilder SqlBuilder { get; }
+    public MappingData MappingData { get; }
 
     public AdoSqlite.SqliteCommand BuildQueryCommand(Query query, AdoSqlite.SqliteConnection sqliteConnection) {
         var cmd = sqliteConnection.CreateCommand();
-        cmd.CommandText = SqlBuilder.BuildQuery(query).ToString();
+        var sqlBuilder = new SqlBuilder(query, MappingData);
+        cmd.CommandText = sqlBuilder.BuildQuery(query).ToString();
         return cmd;
     }
     

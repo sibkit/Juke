@@ -6,23 +6,73 @@ public abstract class Field : QueryElement {
     public string? Alias { get; set; }
 }
 
-public enum FunctionType {
-    Count,
-    Avg,
-    Max,
-    Min,
-    Sum,
-    RowNumber,
-    Lower,
-    Upper
+
+
+public interface IFunctionField { }
+
+public class AvgField : Field, IFunctionField {
+    public Field NestedField { get; }
+
+    public AvgField(Field nestedField) {
+        nestedField.Parent = this;
+        NestedField = nestedField;
+    }
 }
 
-public class FunctionField : Field {
-    public FunctionField() {
-        NestedFields = new ChildList<QueryElement, Field>(this);
+public class MaxField : Field, IFunctionField {
+    public Field NestedField { get; }
+
+    public MaxField(Field nestedField) {
+        nestedField.Parent = this;
+        NestedField = nestedField;
     }
-    public required FunctionType Type { get; init; }
-    public IList<Field> NestedFields { get; }
+}
+
+public class MinField : Field, IFunctionField {
+    public Field NestedField { get; }
+
+    public MinField(Field nestedField) {
+        nestedField.Parent = this;
+        NestedField = nestedField;
+    }
+}
+
+public class SumField : Field, IFunctionField {
+    public Field NestedField { get; }
+
+    public SumField(Field nestedField) {
+        nestedField.Parent = this;
+        NestedField = nestedField;
+    }
+}
+
+public class RowNumberField : Field, IFunctionField {}
+
+public class CountField : Field, IFunctionField {
+    public Field NestedField { get; }
+
+    public CountField(Field nestedField) {
+        nestedField.Parent = this;
+        NestedField = nestedField;
+    }
+}
+
+public class UpperField : Field, IFunctionField {
+    public Field NestedField { get; }
+
+    public UpperField(Field nestedField) {
+        nestedField.Parent = this;
+        NestedField = nestedField;
+    }
+}
+
+public class LowerField : Field, IFunctionField {
+    public Field NestedField { get; }
+
+    public LowerField(Field nestedField) {
+        nestedField.Parent = this;
+        NestedField = nestedField;
+    }
 }
 
 public class LinkField : Field {
@@ -46,15 +96,13 @@ public class LinkField : Field {
 }
 
 public class QueryField : Field {
-    private Query? _query;
-    public Query? Query {
-        get => _query;
-        set {
-            if (_query != null) _query.Parent = null;
-            _query = value;
-            if (_query != null) _query.Parent = this;
-        }
+
+    public QueryField(Query query) {
+        query.Parent = this;
+        Query = query;
     }
+
+    public Query Query { get; }
 }
 
 public class ValueField : Field {

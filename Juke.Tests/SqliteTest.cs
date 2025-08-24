@@ -45,19 +45,20 @@ public class SqliteTest {
             _testOutputHelper.WriteLine(company.Name);
         }
     }
-    
+
     [Fact]
     public void TestCommandsText() {
         var mappingData = new MappingData();
         mappingData.AddMapper(new CompanyMapper());
+        mappingData.AddMapper(new ContactMapper());
         mappingData.RegisterSequence(new SequenceMap {
             SequenceName = "PkCompany",
             DbSequenceName = "pk_company",
             SequenceValueType = typeof(long)
         });
-        
+
         var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        
+
         var driver = new SqliteDriver {
             MappingData = mappingData,
             ConnectionString = $"Data Source = {exeDir}\\sqlite.db",
@@ -71,7 +72,7 @@ public class SqliteTest {
         var db = new Database(driver);
         var session = db.CreateSession();
         var seq = session.GetSequence<long>("PkCompany");
-        
+
         session.Insert(new Company {
             ID = seq.NextValue(),
             Name = "Meta",
@@ -82,29 +83,65 @@ public class SqliteTest {
         });
         session.Insert(new Company {
             ID = seq.NextValue(),
-            Name = "Ledmaster",
+            Name = "Amazon",
         });
         session.Insert(new Company {
             ID = seq.NextValue(),
-            Name = "Google",
+            Name = "Kalashnikov",
         });
         session.Insert(new Company {
             ID = seq.NextValue(),
             Name = "Chrysler",
         });
+        session.Insert(new Company {
+            ID = seq.NextValue(),
+            Name = "Audi",
+        });
 
-        var qCompanies = new EntityQuery<Company>{
-            Condition = new LikeCondition {
-                LeftField = new LinkField("Name"),
-                RightField = new ValueField("BM%")
-            }
+        // var qCompanies = new EntityQuery<Company>{
+        //     Condition = new LikeCondition(
+        //         new LinkField("Name"),
+        //         new ValueField("%e%")
+        //     )
+        // };
+
+        var qCompanies = new EntityQuery<Company> {
+            SortOrders = {
+                new SortOrder(new LinkField("Id"), SortOrderDirection.Desc)
+            },
+            Offset = 5,
+            Limit = 3
         };
-        var companies = session.Read<Company>(qCompanies);
+
+        var q = new JoinQuery {
+            Fields = {
+              new LinkField("cmp","Name"),
+              new LinkField("Post"),
+              new QueryField(new GroupQuery {
+                      Source = new EntityQuery<Company>(),
+                      Fields = {
+                          new SumField(new LinkField("Id"))
+                          },
+                  }
+              )
+            },
+            LeftSource = new EntityQuery<Company> {
+                Alias = "cmp"
+            },
+            RightSource = new EntityQuery<Contact>(),
+            Condition = new EqualCondition(
+                new LinkField("cmp", "Id"),
+                new LinkField("CompanyId")
+            )
+        };
         
+        
+        var companies = session.Read(q);
+
         foreach (var company in companies) {
-            _testOutputHelper.WriteLine($"{company.ID} - {company.Name};");
+            _testOutputHelper.WriteLine($"{company[0]} - {company[1]} - {company[2]};");
         }
-        
-        
+
+
     }
 }

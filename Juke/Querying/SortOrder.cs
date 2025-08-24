@@ -6,6 +6,12 @@ public enum SortOrderDirection {
 }
 
 public class SortOrder: QueryElement {
-    public required Field Field { get; init; }
-    public required SortOrderDirection Direction { get; init; }
+    public Field Field { get; }
+    public SortOrderDirection Direction { get; }
+
+    public SortOrder(Field field, SortOrderDirection direction) {
+        field.Parent =  this;
+        Field = field;
+        Direction = direction;
+    }
 }

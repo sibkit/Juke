@@ -13,9 +13,9 @@ public class CompanyMapper : EntityMapper<Company> {
     }
     public override void WriteValue(Company entity, FieldMap fieldMap, object? value) {
         switch (fieldMap.FieldName) {
-            case "Id": entity.ID = (long?)value; break;
-            case "Name": entity.Name = (string?)value; break;
-            case "Country": entity.Country = (string?)value; break;
+            case "Id": entity.ID = value is DBNull? null : (long?)value; break;
+            case "Name": entity.Name = value is DBNull? null : (string?)value; break;
+            case "Country": entity.Country = value is DBNull? null : (string?)value; break;
             default: throw new NotImplementedException();
         }
     }

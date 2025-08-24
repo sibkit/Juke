@@ -28,8 +28,8 @@ public class NotCondition : Condition {
     public required Condition InnerCondition { get; init; }
 }
 
-public class EqualCondition : Condition {
-    public EqualCondition(Field leftField, Field rightField) {
+public abstract class LeftRightCondition : Condition {
+    protected LeftRightCondition(Field leftField, Field rightField) {
         leftField.Parent = this;
         rightField.Parent = this;
         LeftField = leftField;
@@ -39,29 +39,28 @@ public class EqualCondition : Condition {
     public Field RightField { get; }
 }
 
-public class GreaterCondition : Condition {
-    public required Field LeftField { get; init; }
-    public required Field RightField { get; init; }
+public class EqualCondition : LeftRightCondition {
+    public EqualCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
 }
 
-public class GreaterOrEqualsCondition : Condition {
-    public required Field LeftField { get; init; }
-    public required Field RightField { get; init; }
+public class GreaterCondition : LeftRightCondition {
+    public GreaterCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
 }
 
-public class LessCondition : Condition {
-    public required Field LeftField { get; init; }
-    public required Field RightField { get; init; }
+public class GreaterOrEqualsCondition : LeftRightCondition {
+    public GreaterOrEqualsCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
 }
 
-public class LessOrEqualsCondition : Condition {
-    public required Field LeftField { get; init; }
-    public required Field RightField { get; init; }
+public class LessCondition : LeftRightCondition {
+    public LessCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
 }
 
-public class NotEqualsCondition : Condition {
-    public required Field LeftField { get; init; }
-    public required Field RightField { get; init; }
+public class LessOrEqualsCondition : LeftRightCondition {
+    public LessOrEqualsCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
+}
+
+public class NotEqualsCondition : LeftRightCondition {
+    public NotEqualsCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
 }
 
 public class InCondition : Condition {
@@ -69,9 +68,8 @@ public class InCondition : Condition {
     public required IList<Field> SetFields { get; init; }
 }
 
-public class LikeCondition : Condition {
-    public required Field LeftField { get; init; }
-    public required Field RightField { get; init; }
+public class LikeCondition : LeftRightCondition {
+    public LikeCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
 }
 
 public abstract class Condition: QueryElement {

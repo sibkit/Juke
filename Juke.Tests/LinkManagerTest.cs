@@ -5,7 +5,7 @@ namespace Juke.Tests;
 
 public class LinkManagerTest {
     [Fact]
-    void TestLinkManager() {
+    void Test1() {
 
         var c = new Company {
             ID = 1,
@@ -24,11 +24,7 @@ public class LinkManagerTest {
             },
             Fields = {
                 new LinkField("name"),
-                new FunctionField {
-                    Type = FunctionType.Avg,
-                    NestedFields = {
-                        new LinkField("id"),
-                    },
+                new AvgField(new LinkField("id")){
                     Alias = "id_avg"
                 }
             }
@@ -43,13 +39,9 @@ public class LinkManagerTest {
         var q2 = new EntityQuery<Company> {
             Fields = {
                 new LinkField("Name"),
-                new QueryField {
-                    Query = new GroupQuery {
+                new QueryField( new GroupQuery {
                         Fields = {
-                            new FunctionField {
-                                Type = FunctionType.Sum,
-                                NestedFields = { new LinkField("Id") }
-                            }
+                            new SumField(new LinkField("Id"))
                         },
                         Source = new EntityQuery<Contact>(),
                         GroupFields = {
@@ -60,7 +52,7 @@ public class LinkManagerTest {
                             new LinkField("CompanyId")
                         )
                     }
-                }
+                )
             },
             Alias = "cmp",
             Limit = 50
