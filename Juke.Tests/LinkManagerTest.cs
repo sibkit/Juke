@@ -1,4 +1,5 @@
-﻿using Juke.Querying;
+﻿using Juke.Linking;
+using Juke.Querying;
 using Juke.Sqlite.Sql;
 
 namespace Juke.Tests;

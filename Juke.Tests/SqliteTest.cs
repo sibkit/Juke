@@ -113,35 +113,49 @@ public class SqliteTest {
             Limit = 3
         };
 
+        // var q = new JoinQuery {
+        //     Fields = {
+        //       new LinkField("cmp","Name"),
+        //       new LinkField("Post"),
+        //       new QueryField(new GroupQuery {
+        //               Source = new EntityQuery<Company>(),
+        //               Fields = {
+        //                   new SumField(new LinkField("Id"))
+        //                   },
+        //           }
+        //       )
+        //     },
+        //     LeftSource = new EntityQuery<Company> {
+        //         Alias = "cmp"
+        //     },
+        //     RightSource = new EntityQuery<Contact>(),
+        //     Condition = new EqualCondition(
+        //         new LinkField("cmp", "Id"),
+        //         new LinkField("CompanyId")
+        //     )
+        // };
         var q = new JoinQuery {
             Fields = {
-              new LinkField("cmp","Name"),
-              new LinkField("Post"),
-              new QueryField(new GroupQuery {
-                      Source = new EntityQuery<Company>(),
-                      Fields = {
-                          new SumField(new LinkField("Id"))
-                          },
-                  }
-              )
+                new LinkField("cts", "Name"),
+                new LinkField("cts", "Post"),
+                new LinkField("cmps", "Name")
             },
-            LeftSource = new EntityQuery<Company> {
-                Alias = "cmp"
+            LeftSource = new EntityQuery<Contact>() {
+                Alias = "cts"
             },
-            RightSource = new EntityQuery<Contact>(),
+            RightSource = new EntityQuery<Company>() {
+                Alias = "cmps"
+            },
             Condition = new EqualCondition(
-                new LinkField("cmp", "Id"),
-                new LinkField("CompanyId")
-            )
+                new LinkField("cts", "CompanyId"),
+                new LinkField("cmps", "Id")),
+            JoinType = JoinType.LeftOuter
         };
-        
         
         var companies = session.Read(q);
 
         foreach (var company in companies) {
             _testOutputHelper.WriteLine($"{company[0]} - {company[1]} - {company[2]};");
         }
-
-
     }
 }

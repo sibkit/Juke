@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Juke.Exceptions;
+using Juke.Linking;
 using Juke.Querying;
 
 namespace Juke.Sqlite.Sql;
@@ -72,7 +73,11 @@ public class SqlBuilder {
             case GroupQuery groupQuery: {
                 result.Append(BuildArray(", ", BuildField, groupQuery.Fields));
                 result.Append(" FROM ");
-                result.Append(BuildInnerQuery(groupQuery.Source));
+                if (groupQuery.Source is IEntityQuery { Fields.Count: 0, Limit: null, Offset: null, Condition: null, SortOrders.Count: 0, Alias: null } eq) {
+                    var map = MappingData.GetMapper(eq.EntityType).Map;
+                    result.Append(map.DbTableName);
+                } else
+                    result.Append(BuildInnerQuery(groupQuery.Source));
                 if (groupQuery.GroupFields.Count > 0) {
                     result.Append(" GROUP BY ");
                     result.Append(BuildArray(", ", BuildField, groupQuery.GroupFields));
@@ -127,6 +132,10 @@ public class SqlBuilder {
                         throw new Exception("QuerySqlBuilder: BuildQuery(Unknown JoinType)");
                 }
                 result.Append(BuildInnerQuery(joinQuery.RightSource));
+                if (joinQuery.Condition != null) {
+                    result.Append(" ON ");
+                    result.Append(BuildCondition(joinQuery.Condition));
+                }
                 break;
             }
             default:
@@ -214,18 +223,25 @@ public class SqlBuilder {
             _ => throw new Exception("SqlBuilder: BuildFunctionField (Unknown FunctionField type)")
         };
     }
+
+    private StringBuilder BuildLeftRightCondition(LeftRightCondition cdt, string sep) {
+        var result = new StringBuilder();
+        result.Append(BuildField(cdt.LeftField));
+        result.Append(sep);
+        result.Append(BuildField(cdt.RightField));
+        return result;
+    }
     
     public StringBuilder BuildCondition(Condition condition) {
-        var result = new StringBuilder();
-        switch (condition) {
-            case LikeCondition like:
-                result.Append(BuildField(like.LeftField));
-                result.Append(" LIKE ");
-                result.Append(BuildField(like.RightField));
-                break;
-            default:
-                throw new Exception("CommandBuilder: BuildCondition (Unknown condition type)");
-        }
-        return result;
+        return condition switch {
+            LikeCondition like => BuildLeftRightCondition(like, " LIKE "),
+            EqualCondition eq => BuildLeftRightCondition(eq, " = "),
+            NotEqualsCondition neq => BuildLeftRightCondition(neq, " != "),
+            GreaterCondition gt => BuildLeftRightCondition(gt, " > "),
+            LessCondition lt => BuildLeftRightCondition(lt, " < "),
+            GreaterOrEqualsCondition gteq => BuildLeftRightCondition(gteq, " >= "),
+            LessOrEqualsCondition lteq => BuildLeftRightCondition(lteq, " <= "),
+            _ => throw new Exception("CommandBuilder: BuildCondition (Unknown condition type)")
+        };
     }
 }

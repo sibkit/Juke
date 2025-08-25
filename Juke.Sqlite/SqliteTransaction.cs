@@ -13,11 +13,11 @@ public class SqliteTransaction: ITransaction {
     
     public void Commit() {
         _adoTransaction.Commit();
-        _state = TransactionState.Committed;
+        State = TransactionState.Committed;
     }
     public void Rollback() {
         _adoTransaction.Rollback();
-        _state = TransactionState.Aborted;
+        State = TransactionState.Aborted;
     }
 
     public TransactionState State {

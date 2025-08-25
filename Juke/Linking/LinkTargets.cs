@@ -1,7 +1,7 @@
 ﻿using Juke.Mapping;
 using Juke.Querying;
 
-namespace Juke.Sqlite.Sql;
+namespace Juke.Linking;
 
 public interface ILinkTarget {
     

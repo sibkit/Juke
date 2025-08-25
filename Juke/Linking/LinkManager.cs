@@ -1,6 +1,6 @@
 ﻿using Juke.Querying;
 
-namespace Juke.Sqlite.Sql;
+namespace Juke.Linking;
 
 public class LinkManager {
     public Query Query { get; }
