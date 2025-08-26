@@ -48,7 +48,7 @@ public class LinkManagerTest {
                         GroupFields = {
                             new LinkField("CompanyId") 
                         },
-                        Condition = new EqualCondition(
+                        Condition = new EqualsCondition(
                             fCmpId,
                             new LinkField("CompanyId")
                         )

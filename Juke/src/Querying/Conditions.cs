@@ -39,8 +39,8 @@ public abstract class LeftRightCondition : Condition {
     public Field RightField { get; }
 }
 
-public class EqualCondition : LeftRightCondition {
-    public EqualCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
+public class EqualsCondition : LeftRightCondition {
+    public EqualsCondition(Field leftField, Field rightField) : base(leftField, rightField) { }
 }
 
 public class GreaterCondition : LeftRightCondition {

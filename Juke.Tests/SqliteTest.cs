@@ -146,7 +146,7 @@ public class SqliteTest {
             RightSource = new EntityQuery<Company>() {
                 Alias = "cmps"
             },
-            Condition = new EqualCondition(
+            Condition = new EqualsCondition(
                 new LinkField("cts", "CompanyId"),
                 new LinkField("cmps", "Id")),
             JoinType = JoinType.LeftOuter

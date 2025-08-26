@@ -16,10 +16,10 @@ public class SqlBuilder {
         Query = query;
     }
     
-    private StringBuilder? BuildArray<T>(string separator, Func<T, StringBuilder?> build, IList<T> elements) 
+    private StringBuilder BuildArray<T>(string separator, Func<T, StringBuilder?> build, IList<T> elements) 
     where T: QueryElement {
         if (elements.Count == 0)
-            return null;
+            return new StringBuilder();
         var result = new StringBuilder();
         result.Append(build(elements[0]));
         for (var i = 1; i < elements.Count; i++) {
@@ -164,6 +164,8 @@ public class SqlBuilder {
         return result;
     }
 
+
+    
     public StringBuilder BuildField(Field field) {
         var result = new StringBuilder();
         switch (field) {
@@ -231,17 +233,48 @@ public class SqlBuilder {
         result.Append(BuildField(cdt.RightField));
         return result;
     }
+
+    private StringBuilder BuildEqualCondition(EqualsCondition eq) {
+        var result = new StringBuilder();
+        if (eq.RightField is ValueField { Value: null }) {
+            result.Append(BuildField(eq.LeftField));
+            result.Append(" IS NULL");
+        } else if (eq.LeftField is ValueField { Value: null }) {
+            result.Append(BuildField(eq.RightField));
+            result.Append(" IS NULL");
+        } else {
+            result.Append(BuildLeftRightCondition(eq, "="));
+        }
+        return result;
+    }
+    
+    private StringBuilder BuildNotEqualCondition(NotEqualsCondition eq) {
+        var result = new StringBuilder();
+        if (eq.RightField is ValueField { Value: null }) {
+            result.Append(BuildField(eq.LeftField));
+            result.Append(" IS NOT NULL");
+        } else if (eq.LeftField is ValueField { Value: null }) {
+            result.Append(BuildField(eq.RightField));
+            result.Append(" IS NOT NULL");
+        } else {
+            result.Append(BuildLeftRightCondition(eq, "!="));
+        }
+        return result;
+    }
     
     public StringBuilder BuildCondition(Condition condition) {
         return condition switch {
             LikeCondition like => BuildLeftRightCondition(like, " LIKE "),
-            EqualCondition eq => BuildLeftRightCondition(eq, " = "),
-            NotEqualsCondition neq => BuildLeftRightCondition(neq, " != "),
+            EqualsCondition eq => BuildEqualCondition(eq),
+            NotEqualsCondition neq => BuildNotEqualCondition(neq),
             GreaterCondition gt => BuildLeftRightCondition(gt, " > "),
             LessCondition lt => BuildLeftRightCondition(lt, " < "),
             GreaterOrEqualsCondition gteq => BuildLeftRightCondition(gteq, " >= "),
             LessOrEqualsCondition lteq => BuildLeftRightCondition(lteq, " <= "),
-            _ => throw new Exception("CommandBuilder: BuildCondition (Unknown condition type)")
+            AndCondition and => BuildArray(" AND ",BuildCondition, and.InnerConditions),
+            OrCondition or => BuildArray(" OR ", BuildCondition, or.InnerConditions),
+            NotCondition not => new StringBuilder($"NOT {BuildCondition(not.InnerCondition)}"),
+        _ => throw new Exception("CommandBuilder: BuildCondition (Unknown condition type)")
         };
     }
 }
