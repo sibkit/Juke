@@ -137,7 +137,7 @@ public class SqliteTest {
         var q = new JoinQuery {
             Fields = {
                 new LinkField("cts", "Name"),
-                new LinkField("cts", "Post"),
+                new LinkField("Post"),
                 new LinkField("cmps", "Name")
             },
             LeftSource = new EntityQuery<Contact>() {

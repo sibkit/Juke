@@ -64,8 +64,8 @@ public class NotEqualsCondition : LeftRightCondition {
 }
 
 public class InCondition : Condition {
-    public required Field MainField { get; init; }
-    public required IList<Field> SetFields { get; init; }
+    public required Field Field { get; init; }
+    public required IList<Field> InFields { get; init; }
 }
 
 public class LikeCondition : LeftRightCondition {

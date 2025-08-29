@@ -262,6 +262,15 @@ public class SqlBuilder {
         return result;
     }
     
+    private StringBuilder BuildInCondition(InCondition inCondition) {
+        var result = new StringBuilder();
+        result.Append(BuildField(inCondition.Field));
+        result.Append(" IN (");
+        result.Append(BuildArray(", ", BuildField, inCondition.InFields));
+        result.Append(")");
+        return result;
+    }
+    
     public StringBuilder BuildCondition(Condition condition) {
         return condition switch {
             LikeCondition like => BuildLeftRightCondition(like, " LIKE "),
@@ -274,6 +283,7 @@ public class SqlBuilder {
             AndCondition and => BuildArray(" AND ",BuildCondition, and.InnerConditions),
             OrCondition or => BuildArray(" OR ", BuildCondition, or.InnerConditions),
             NotCondition not => new StringBuilder($"NOT {BuildCondition(not.InnerCondition)}"),
+            InCondition inCondition => BuildInCondition(inCondition),
         _ => throw new Exception("CommandBuilder: BuildCondition (Unknown condition type)")
         };
     }
