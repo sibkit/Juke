@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+        <RootNamespace>Juke.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,12 +20,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Juke.Sqlite\Juke.Sqlite.csproj" />
-      <ProjectReference Include="..\Juke\Juke.csproj" />
+      <ProjectReference Include="..\Juke.Orm.Sqlite\Juke.Orm.Sqlite.csproj" />
+      <ProjectReference Include="..\Juke.Orm\Juke.Orm.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="sqlite.db">
+      <None Update="Orm\sqlite.db">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

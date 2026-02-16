@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juke", "Juke\Juke.csproj", "{AD924180-47D1-41DC-8129-3333ACA8845D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juke.Orm", "Juke.Orm\Juke.Orm.csproj", "{AD924180-47D1-41DC-8129-3333ACA8845D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juke.Tests", "Juke.Tests\Juke.Tests.csproj", "{96B99E34-2A72-4C91-B9E1-5BAB2E3CC9CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juke.Sqlite", "Juke.Sqlite\Juke.Sqlite.csproj", "{5F880ED9-2CB8-4562-AC24-5D854FBA662C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juke.Orm.Sqlite", "Juke.Orm.Sqlite\Juke.Orm.Sqlite.csproj", "{5F880ED9-2CB8-4562-AC24-5D854FBA662C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

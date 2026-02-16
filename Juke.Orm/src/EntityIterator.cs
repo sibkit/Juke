@@ -1,9 +1,9 @@
 ﻿// using System.Collections;
-// using Juke.Accessing;
-// using Juke.Mapping;
-// using Juke.Querying;
+// using Juke.Orm.Accessing;
+// using Juke.Orm.Mapping;
+// using Juke.Orm.Querying;
 //
-// namespace Juke;
+// namespace Juke.Orm;
 //
 // public class EntityIterator<T>: IEnumerator<T>
 // where T : class, new() {

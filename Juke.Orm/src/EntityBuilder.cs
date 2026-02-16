@@ -1,6 +1,6 @@
-﻿// using Juke.Mapping;
+﻿// using Juke.Orm.Mapping;
 //
-// namespace Juke;
+// namespace Juke.Orm;
 //
 // public class EntityBuilder<T>
 //     where T : class, new(){
