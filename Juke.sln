@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juke.Tests", "Juke.Tests\Ju
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juke.Orm.Sqlite", "Juke.Orm.Sqlite\Juke.Orm.Sqlite.csproj", "{5F880ED9-2CB8-4562-AC24-5D854FBA662C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Juke.Orm", "Juke.Orm", "{5F849C6E-8EBE-4B5E-9684-93C80C2F3523}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{5F880ED9-2CB8-4562-AC24-5D854FBA662C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F880ED9-2CB8-4562-AC24-5D854FBA662C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F880ED9-2CB8-4562-AC24-5D854FBA662C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AD924180-47D1-41DC-8129-3333ACA8845D} = {5F849C6E-8EBE-4B5E-9684-93C80C2F3523}
+		{5F880ED9-2CB8-4562-AC24-5D854FBA662C} = {5F849C6E-8EBE-4B5E-9684-93C80C2F3523}
 	EndGlobalSection
 EndGlobal
