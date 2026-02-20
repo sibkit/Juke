@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>Juke.Erp.Web</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Fluid.Core" Version="2.31.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Juke.Web.Components\Juke.Web.Components.csproj" />
+      <ProjectReference Include="..\..\Juke.Web.Core\Juke.Web.Core.csproj" />
+      <ProjectReference Include="..\Juke.Erp.Modules.Sales\Juke.Erp.Modules.Sales.csproj" />
+    </ItemGroup>
+
+</Project>
