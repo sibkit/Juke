@@ -19,21 +19,32 @@ public class AspNetCoreContextAdapter : IHttpContext
 public class AspNetCoreRequestAdapter : IHttpRequest
 {
     private readonly HttpRequest _request;
-    private Method _method;
-    public AspNetCoreRequestAdapter(HttpRequest request) => _request = request;
 
-    Method IHttpRequest.Method {
-        get => _method;
-        init => _method = value;
+    public AspNetCoreRequestAdapter(HttpRequest request) 
+    {
+        _request = request;
+        
+        // Parse HTTP Method securely
+        if (Enum.TryParse<Method>(request.Method, ignoreCase: true, out var parsedMethod)) {
+            Method = parsedMethod;
+        } else {
+            Method = Juke.Web.Core.Method.UNDEFINED;
+        }
+
+        // Must be initialized, as Router writes into it!
+        RouteValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase); 
     }
 
-    string IHttpRequest.Path { get; init; }
-    public string QueryString { get; }
-    public Dictionary<string, object> RouteValues { get; }
-    public IReadOnlyDictionary<string, string> Headers { get; }
-    public Stream Body { get; }
+    public Method Method { get; }
+
+    // Mapping properties directly to avoid NullReferenceException
     public string Path => _request.Path.Value ?? "/";
-    public string Method => _request.Method;
+    public string QueryString => _request.QueryString.Value ?? string.Empty;
+    public Dictionary<string, object> RouteValues { get; }
+    public Stream Body => _request.Body;
+
+    // Fast mapping to ASP.NET Core IHeaderDictionary
+    public string? GetHeader(string key) => _request.Headers[key];
 }
 
 public class AspNetCoreResponseAdapter : IHttpResponse
@@ -48,12 +59,19 @@ public class AspNetCoreResponseAdapter : IHttpResponse
         set => _response.StatusCode = value; 
     }
 
-    public IDictionary<string, string> Headers { get; }
-    public Stream Body { get; }
+    public Stream Body => _response.Body;
 
-    public Task WriteAsync(string content)
+    public void AddHeader(string key, string value)
     {
-        // Пробрасываем асинхронный вызов дальше в ASP.NET Core
-        return _response.WriteAsync(content); 
+        _response.Headers[key] = value; 
+    }
+
+    // <-- Реализация метода чтения
+    public string? GetHeader(string key)
+    {
+        if (_response.Headers.TryGetValue(key, out var values)) {
+            return values.ToString();
+        }
+        return null;
     }
 }

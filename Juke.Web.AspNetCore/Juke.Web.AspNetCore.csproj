@@ -7,13 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
-        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.3\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
-      </Reference>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Juke.Web.Core\Juke.Web.Core.csproj" />
+        <ProjectReference Include="..\Juke.Web.Core\Juke.Web.Core.csproj" />
     </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>Juke.Erp.Web</RootNamespace>
+        <RootNamespace>Juke.Erp.WebHost</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Juke.Web.AspNetCore\Juke.Web.AspNetCore.csproj" />
       <ProjectReference Include="..\..\Juke.Web.Components\Juke.Web.Components.csproj" />
       <ProjectReference Include="..\..\Juke.Web.Core\Juke.Web.Core.csproj" />
       <ProjectReference Include="..\Juke.Erp.Modules.Sales\Juke.Erp.Modules.Sales.csproj" />

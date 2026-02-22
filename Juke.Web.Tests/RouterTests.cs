@@ -1,8 +1,11 @@
-﻿using System;
+﻿/* RouterTests.cs */
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 using Juke.Web.Core;
+using Juke.Web.Core.Handlers;
 using Juke.Web.Core.Routing;
 
 namespace Juke.Web.Tests;
@@ -11,11 +14,16 @@ namespace Juke.Web.Tests;
 public class DummyHandler : IRequestHandler { 
     public string Name { get; }
     public DummyHandler(string name = "") { Name = name; }
-    public void Handle(IHttpContext context) {} 
+
+    public Task HandleAsync(IHttpContext context) {
+        return Task.CompletedTask;
+    }
 }
 
 public class DummyErrorHandler : IErrorHandler {
-    public void Handle(IHttpContext context, Exception? exception) {}
+    public Task HandleAsync(IHttpContext context, Exception? exception) {
+        return Task.CompletedTask;
+    }
 }
 
 public class AnyStringMatcher : IPathPartMatcher {
@@ -30,18 +38,35 @@ public class AnyStringMatcher : IPathPartMatcher {
 }
 
 public class MockHttpRequest : IHttpRequest {
-    public Method Method { get; init; }
-    public string Path { get; init; } = string.Empty;
-    public string QueryString { get; } = string.Empty;
-    public Dictionary<string, object> RouteValues { get; } = new();
-    public IReadOnlyDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
-    public Stream Body { get; } = Stream.Null;
+    // Добавлен set для удобства мокирования в тестах
+    public Method Method { get; set; } 
+    public string Path { get; set; } = string.Empty;
+    public string QueryString { get; set; } = string.Empty;
+    public Dictionary<string, object> RouteValues { get; } = new(StringComparer.OrdinalIgnoreCase);
+    public Stream Body { get; set; } = Stream.Null;
+
+    private readonly Dictionary<string, string> _headers = new(StringComparer.OrdinalIgnoreCase);
+    
+    public string? GetHeader(string key) => _headers.TryGetValue(key, out var val) ? val : null;
+    
+    // Вспомогательный метод для тестов
+    public void SetHeaderForTest(string key, string value) => _headers[key] = value;
 }
 
 public class MockHttpResponse : IHttpResponse {
     public int StatusCode { get; set; } = 200;
-    public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
-    public Stream Body { get; } = Stream.Null;
+    public Stream Body { get; set; } = Stream.Null;
+
+    public Dictionary<string, string> InternalHeaders { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public void AddHeader(string key, string value) {
+        InternalHeaders[key] = value;
+    }
+
+    // <-- Добавили метод для тестов
+    public string? GetHeader(string key) {
+        return InternalHeaders.GetValueOrDefault(key);
+    }
 }
 
 public class MockHttpContext : IHttpContext {
@@ -81,7 +106,7 @@ public class RouterTests
         var ordersNode = new StaticRouteNode("orders");
         ordersNode.AddHandler(Method.POST, new DummyHandler("CreateOrder"));
         v1Group.AddNode(ordersNode);
-        apiNode.Mount("v1", v1Group); // Монтируем группу по пути "v1"
+        apiNode.Mount("v1", v1Group);
 
         root.AddNode(apiNode);
 
@@ -98,7 +123,7 @@ public class RouterTests
 
         Assert.NotNull(handler);
         Assert.Equal("Root", handler.Name);
-        Assert.Equal(200, context.Response.StatusCode); // Статус не должен измениться
+        Assert.Equal(200, context.Response.StatusCode);
     }
 
     [Fact]

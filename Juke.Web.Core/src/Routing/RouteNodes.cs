@@ -1,4 +1,6 @@
-﻿namespace Juke.Web.Core.Routing;
+﻿using Juke.Web.Core.Handlers;
+
+namespace Juke.Web.Core.Routing;
 
 public interface IRouteNode {
     IReadOnlyList<IRouteNode> ChildNodes { get; }
