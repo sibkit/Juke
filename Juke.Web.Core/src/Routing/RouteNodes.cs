@@ -50,3 +50,36 @@ public abstract class RouteNodeBase : IRouteNode {
         }
     }
 }
+
+public class StaticRouteNode: RouteNodeBase {
+    public StaticRouteNode(string pathPart) {
+        PathPart = pathPart;
+    }
+    public string PathPart { get; init; }
+}
+
+public class DynamicRouteNode: RouteNodeBase {
+    
+    public string ParameterName { get; }
+    public IPathPartMatcher Matcher { get; }
+    
+    public DynamicRouteNode(IPathPartMatcher matcher, string parameterName) {
+        Matcher = matcher;
+        ParameterName = parameterName;
+    }
+    
+    public bool TryMatch(ReadOnlySpan<char> pathPart, out object? parsedValue) {
+        return Matcher.TryMatch(pathPart, out parsedValue);
+    }
+}
+
+public class GroupRouteNode : RouteNodeBase {
+    public string? PathPart { get; private set; }
+    
+    internal void SetMountPath(string pathPart) {
+        if (PathPart != null) {
+            throw new InvalidOperationException($"Эта группа уже смонтирована по пути '{PathPart}'.");
+        }
+        PathPart = pathPart;
+    }
+}

@@ -13,7 +13,7 @@ public class Router {
     
     
     public IHandler? Resolve(IHttpContext context) {
-        IHandler? handler;
+        //IHandler? handler;
         
         var method = context.Request.Method;
         if (method == Method.UNDEFINED) {
@@ -21,19 +21,18 @@ public class Router {
             return ErrorHandlers.GetValueOrDefault(400);
         }
 
-        var path = context.Request.Path.Trim('/');
+        var path = context.Request.Path.AsSpan().Trim('/');
         
-        if (string.IsNullOrEmpty(path)) {
-            handler = RootNode.GetHandler(method);
-            if(handler == null) {
+        if (path.IsEmpty) {
+            var rootHandler = RootNode.GetHandler(method);
+            if(rootHandler == null) {
                 context.Response.StatusCode = 404;
-                handler = ErrorHandlers.GetValueOrDefault(404);
+                rootHandler = ErrorHandlers.GetValueOrDefault(404);
             }
-            return handler;
+            return rootHandler;
         }
         
-        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        handler = MatchRecursive(RootNode.ChildNodes, segments, 0, method, context.Request.RouteValues);
+        var handler = MatchRecursive(RootNode.ChildNodes, path, method, context.Request.RouteValues);
         
         if (handler != null) {
             return handler; 
@@ -43,39 +42,48 @@ public class Router {
         return ErrorHandlers.GetValueOrDefault(404);
     }
 
-    private IHandler? MatchRecursive(
+private IHandler? MatchRecursive(
         IReadOnlyList<IRouteNode> nodes,
-        string[] segments,
-        int segmentIndex,
+        ReadOnlySpan<char> path,
         Method method,
-        Dictionary<string, string> routeValues) {
+        Dictionary<string, object> routeValues) {
 
-        var currentSegment = segments[segmentIndex];
-        var isLastSegment = segmentIndex == segments.Length - 1;
+        var slashIndex = path.IndexOf('/');
+        
+        ReadOnlySpan<char> currentSegment;
+        ReadOnlySpan<char> remainingPath;
+
+        if (slashIndex == -1) {
+            currentSegment = path;
+            remainingPath = default;
+        } else {
+            currentSegment = path[..slashIndex];
+            remainingPath = path[(slashIndex + 1)..].TrimStart('/');
+        }
+
+        var isLastSegment = remainingPath.IsEmpty;
 
         foreach (var node in nodes) {
             var isMatch = false;
-            (string key, string value)? dynamicEntry = null;
-            // string? dynamicKey = null;
-            // string? dynamicValue = null;
+            (string key, object? value)? dynamicEntry = null;
 
             switch (node) {
                 case StaticRouteNode staticNode: {
-                    if (staticNode.PathPart.Equals(currentSegment, StringComparison.OrdinalIgnoreCase)) {
+                    if (currentSegment.Equals(staticNode.PathPart, StringComparison.OrdinalIgnoreCase)) {
+                        isMatch = true;
+                    }
+                    break;
+                }
+                case GroupRouteNode groupNode: {
+                    if (groupNode.PathPart != null && currentSegment.Equals(groupNode.PathPart, StringComparison.OrdinalIgnoreCase)) {
                         isMatch = true;
                     }
                     break;
                 }
                 case DynamicRouteNode dynamicNode: {
-                    if (dynamicNode.IsMatch(currentSegment)) {
+                    if (dynamicNode.TryMatch(currentSegment, out var parsedValue)) {
                         isMatch = true;
-                        dynamicEntry = (dynamicNode.ParameterName, currentSegment);
-                    }
-                    break;
-                }
-                case GroupRouteNode groupNode: { 
-                    if (groupNode.PathPart != null && groupNode.PathPart.Equals(currentSegment, StringComparison.OrdinalIgnoreCase)) {
-                        isMatch = true;
+                        dynamicEntry = (dynamicNode.ParameterName, parsedValue);
                     }
                     break;
                 }
@@ -91,7 +99,7 @@ public class Router {
                         return handler;
                     }
                 } else {
-                    var handler = MatchRecursive(node.ChildNodes, segments, segmentIndex + 1, method, routeValues);
+                    var handler = MatchRecursive(node.ChildNodes, remainingPath, method, routeValues);
 
                     if (handler != null) {
                         if (dynamicEntry != null) {

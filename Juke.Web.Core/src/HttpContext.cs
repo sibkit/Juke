@@ -15,7 +15,7 @@ public interface IHttpRequest {
     string Path { get; init; }
     string QueryString { get; } 
     
-    Dictionary<string, string> RouteValues { get; }
+    Dictionary<string, object> RouteValues { get; }
     IReadOnlyDictionary<string, string> Headers { get; }
     
     Stream Body { get; }

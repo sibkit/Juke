@@ -29,7 +29,7 @@ public class AspNetCoreRequestAdapter : IHttpRequest
 
     string IHttpRequest.Path { get; init; }
     public string QueryString { get; }
-    public Dictionary<string, string> RouteValues { get; }
+    public Dictionary<string, object> RouteValues { get; }
     public IReadOnlyDictionary<string, string> Headers { get; }
     public Stream Body { get; }
     public string Path => _request.Path.Value ?? "/";

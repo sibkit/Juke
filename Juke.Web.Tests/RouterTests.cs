@@ -19,14 +19,21 @@ public class DummyErrorHandler : IErrorHandler {
 }
 
 public class AnyStringMatcher : IPathPartMatcher {
-    public bool IsMatch(string pathPart) => true;
+    public bool TryMatch(ReadOnlySpan<char> pathPart, out object? parsedValue) {
+        if (pathPart.IsEmpty) {
+            parsedValue = null;
+            return false;
+        }
+        parsedValue = pathPart.ToString();
+        return true;
+    }
 }
 
 public class MockHttpRequest : IHttpRequest {
     public Method Method { get; init; }
     public string Path { get; init; } = string.Empty;
     public string QueryString { get; } = string.Empty;
-    public Dictionary<string, string> RouteValues { get; } = new();
+    public Dictionary<string, object> RouteValues { get; } = new();
     public IReadOnlyDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
     public Stream Body { get; } = Stream.Null;
 }
