@@ -51,7 +51,7 @@ public static class HttpResponseExtensions
     
     public static async Task WriteAsync(this IHttpResponse response, string content) {
         var bytes = Encoding.UTF8.GetBytes(content);
-        await response.Body.WriteAsync(bytes);
+        await response.Body.WriteAsync(bytes.AsMemory()); 
     }
 }
 
