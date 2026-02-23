@@ -5,7 +5,7 @@ public interface IPage : IComponent {
     string Language { get; }
         
 
-    void InjectDependencies(
+    void InjectResources(
         IReadOnlyList<IWebResource> resources, 
         IReadOnlyList<InlineScript> scripts
     );

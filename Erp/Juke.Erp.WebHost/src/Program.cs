@@ -1,3 +1,4 @@
+using Juke.Erp.WebHost.Handlers;
 using Juke.Web.AspNetCore;
 using Juke.Web.Core;
 using Juke.Web.Core.Handlers;
@@ -14,31 +15,36 @@ public class Program
 
         // 1. Build the Route Tree directly in memory
         var rootNode = new GroupRouteNode();
-        rootNode.AddHandler(Method.GET, new HelloWorldHandler());
-
-        var router = new Router(rootNode);
         
-        // Register Error Handlers
-        router.ErrorHandlers[404] = new FallbackErrorHandler(404, "Page Not Found");
-        router.ErrorHandlers[400] = new FallbackErrorHandler(400, "Bad Request");
+        rootNode.AddHandler(Method.GET, new HomeHandler());
+
+        var router = new Router(rootNode) {
+            ErrorHandlers = {
+                // Register Error Handlers
+                [404] = new FallbackErrorHandler(404, "Page Not Found"),
+                [400] = new FallbackErrorHandler(400, "Bad Request")
+            }
+        };
 
         // 2. Connect ASP.NET Core pipeline directly to the Router instance via closure
         app.Run(async (context) => 
         {
-            var jukeContext = new AspNetCoreContextAdapter(context);
+            var jukeContext = new ContextAdapter(context);
             
             // We use the 'router' variable directly from the outer scope
             var handler = router.Resolve(jukeContext);
             
-            if (handler is IRequestHandler requestHandler) {
-                await requestHandler.HandleAsync(jukeContext);
-            } 
-            else if (handler is IErrorHandler errorHandler) {
-                await errorHandler.HandleAsync(jukeContext, null);
-            } 
-            else {
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Internal Server Error: No handler resolved.");
+            switch (handler) {
+                case IRequestHandler requestHandler:
+                    await requestHandler.HandleAsync(jukeContext);
+                    break;
+                case IErrorHandler errorHandler:
+                    await errorHandler.HandleAsync(jukeContext, null);
+                    break;
+                default:
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsync("Internal Server Error: No handler resolved.");
+                    break;
             }
         });
 

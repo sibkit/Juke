@@ -11,7 +11,9 @@ using Juke.Web.Core.Routing;
 namespace Juke.Web.Tests;
 
 // --- Заглушки для тестов ---
-public class DummyHandler : IRequestHandler { 
+
+public class DummyHandler : IRequestHandler 
+{ 
     public string Name { get; }
     public DummyHandler(string name = "") { Name = name; }
 
@@ -20,13 +22,15 @@ public class DummyHandler : IRequestHandler {
     }
 }
 
-public class DummyErrorHandler : IErrorHandler {
+public class DummyErrorHandler : IErrorHandler 
+{
     public Task HandleAsync(IHttpContext context, Exception? exception) {
         return Task.CompletedTask;
     }
 }
 
-public class AnyStringMatcher : IPathPartMatcher {
+public class AnyStringMatcher : IPathPartMatcher 
+{
     public bool TryMatch(ReadOnlySpan<char> pathPart, out object? parsedValue) {
         if (pathPart.IsEmpty) {
             parsedValue = null;
@@ -37,8 +41,8 @@ public class AnyStringMatcher : IPathPartMatcher {
     }
 }
 
-public class MockHttpRequest : IHttpRequest {
-    // Добавлен set для удобства мокирования в тестах
+public class MockHttpRequest : IHttpRequest 
+{
     public Method Method { get; set; } 
     public string Path { get; set; } = string.Empty;
     public string QueryString { get; set; } = string.Empty;
@@ -48,14 +52,13 @@ public class MockHttpRequest : IHttpRequest {
     private readonly Dictionary<string, string> _headers = new(StringComparer.OrdinalIgnoreCase);
     
     public string? GetHeader(string key) => _headers.TryGetValue(key, out var val) ? val : null;
-    
-    // Вспомогательный метод для тестов
     public void SetHeaderForTest(string key, string value) => _headers[key] = value;
 }
 
-public class MockHttpResponse : IHttpResponse {
+public class MockHttpResponse : IHttpResponse 
+{
     public int StatusCode { get; set; } = 200;
-    public Stream Body { get; set; } = Stream.Null;
+    public Stream Body { get; } = new MemoryStream();
 
     public Dictionary<string, string> InternalHeaders { get; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -63,18 +66,27 @@ public class MockHttpResponse : IHttpResponse {
         InternalHeaders[key] = value;
     }
 
-    // <-- Добавили метод для тестов
     public string? GetHeader(string key) {
-        return InternalHeaders.GetValueOrDefault(key);
+        return InternalHeaders.TryGetValue(key, out var value) ? value : null;
     }
 }
 
-public class MockHttpContext : IHttpContext {
+public class DummyServiceProvider : IServiceProvider 
+{
+    public object? GetService(Type serviceType) => null;
+}
+
+public class MockHttpContext : IHttpContext 
+{
     public IHttpRequest Request { get; set; } = new MockHttpRequest();
     public IHttpResponse Response { get; } = new MockHttpResponse();
+    
+    // Добавлено для соответствия последнему контракту IHttpContext
+    public IServiceProvider RequestServices { get; } = new DummyServiceProvider(); 
 }
 
 // --- Сами тесты ---
+
 public class RouterTests
 {
     private Router SetupRouter()

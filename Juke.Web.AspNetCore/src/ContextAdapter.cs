@@ -4,16 +4,21 @@ using HttpContext = Microsoft.AspNetCore.Http.HttpContext;
 
 namespace Juke.Web.AspNetCore;
 
-public class AspNetCoreContextAdapter : IHttpContext
+public class ContextAdapter : IHttpContext
 {
-    public AspNetCoreContextAdapter(HttpContext aspNetContext)
+    private readonly HttpContext _aspNetContext;
+
+    public ContextAdapter(HttpContext aspNetContext)
     {
+        _aspNetContext = aspNetContext;
         Request = new AspNetCoreRequestAdapter(aspNetContext.Request);
         Response = new AspNetCoreResponseAdapter(aspNetContext.Response);
     }
 
     public IHttpRequest Request { get; }
     public IHttpResponse Response { get; }
+    
+    public IServiceProvider RequestServices => _aspNetContext.RequestServices; 
 }
 
 public class AspNetCoreRequestAdapter : IHttpRequest

@@ -16,6 +16,7 @@ public enum Method {
 public interface IHttpContext {
     IHttpRequest Request { get; }
     IHttpResponse Response { get; }
+    IServiceProvider RequestServices { get; } 
 }
 
 public interface IHttpRequest {
@@ -45,12 +46,21 @@ public static class HttpResponseExtensions
     }
 
     public static string? GetContentType(this IHttpResponse response) {
-        // Теперь мы просто читаем заголовок через абстракцию
         return response.GetHeader("Content-Type");
     }
     
     public static async Task WriteAsync(this IHttpResponse response, string content) {
         var bytes = Encoding.UTF8.GetBytes(content);
-        await response.Body.WriteAsync(bytes, 0, bytes.Length);
+        await response.Body.WriteAsync(bytes);
+    }
+}
+
+public static class ServiceProviderExtensions {
+    public static T GetRequiredService<T>(this IServiceProvider provider) where T : notnull {
+        var service = provider.GetService(typeof(T));
+        if (service == null) {
+            throw new InvalidOperationException($"Service '{typeof(T).Name}' is not registered.");
+        }
+        return (T)service;
     }
 }
