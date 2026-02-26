@@ -1,54 +1,61 @@
 ﻿/* Juke.Web.Core/Handlers/PageHandler.cs */
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Juke.Web.Core.Assets;
+using Juke.Web.Core.Http;
 using Juke.Web.Core.Render;
 
 namespace Juke.Web.Core.Handlers;
 
 public abstract class PageHandler : IRequestHandler 
 {
-    // Теперь метод асинхронный, чтобы можно было сходить в БД!
+    // Асинхронное создание страницы (отличное место для походов в БД в наследниках)
     protected abstract ValueTask<IPage> CreatePageAsync(IHttpContext context);
 
     public async Task HandleAsync(IHttpContext context) 
     {
-        // 1. Сбор данных и создание дерева страницы происходит здесь
         var page = await CreatePageAsync(context);
-
-        // 2. Сбор ресурсов со всего готового дерева (Дедупликация)
-        var resourcesMap = new Dictionary<string, IWebResource>(StringComparer.OrdinalIgnoreCase);
-        var scriptsMap = new Dictionary<string, InlineScript>(StringComparer.OrdinalIgnoreCase);
+        
+        // Используем конкретные классы ExternalAsset и InlineAsset
+        var externalMap = new Dictionary<string, ExternalAsset>(StringComparer.OrdinalIgnoreCase);
+        var inlineMap = new Dictionary<string, InlineAsset>(StringComparer.OrdinalIgnoreCase);
             
-        CollectDependencies(page, resourcesMap, scriptsMap);
+        var registry = context.RequestServices.Get<AssetRegistry>();
+        CollectDependencies(page, externalMap, inlineMap, registry);
 
-        // 3. Инъекция собранных данных обратно в страницу
-        page.InjectResources(resourcesMap.Values.ToList(), scriptsMap.Values.ToList());
+        page.InjectAssets(externalMap.Values.ToList(), inlineMap.Values.ToList());
 
-        // 4. Потоковый рендер
         await using var writer = new StreamWriter(context.Response.Body, new UTF8Encoding(false), 4096, leaveOpen: true);
         await page.RenderAsync(writer, context);
         await writer.FlushAsync();
     }
 
-    private void CollectDependencies(
+    private static void CollectDependencies(
         IComponent node, 
-        Dictionary<string, IWebResource> resources, 
-        Dictionary<string, InlineScript> scripts) 
+        Dictionary<string, ExternalAsset> externalAssets, 
+        Dictionary<string, InlineAsset> inlineAssets,
+        AssetRegistry registry) 
     {
-        var nodeResources = node.GetResources();
-        foreach (var res in nodeResources) {
-            resources.TryAdd(res.RelativePath, res);
+        foreach (var asset in node.GetAssets()) 
+        {
+            switch (asset) 
+            {
+                case ExternalAsset external:
+                    externalAssets.TryAdd(external.RelativePath, external);
+                    registry.Register(external); 
+                    break;
+                case InlineAsset inline:
+                    inlineAssets.TryAdd(inline.Id, inline);
+                    break;
+            }
         }
-
-        var nodeScripts = node.GetInlineScripts();
-        foreach (var script in nodeScripts) {
-            scripts.TryAdd(script.Id, script);
-        }
-
         if (node is Component baseComponent) {
-            var children = baseComponent.Children;
-            foreach (var t in children) {
-                CollectDependencies(t, resources, scripts);
+            foreach (var child in baseComponent.Children) {
+                CollectDependencies(child, externalAssets, inlineAssets, registry);
             }
         }
     }

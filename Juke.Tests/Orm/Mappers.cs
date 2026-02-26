@@ -1,6 +1,6 @@
 ﻿using Juke.Mapping;
 
-namespace Juke.Tests;
+namespace Juke.Tests.Orm;
 
 public class CompanyMapper : EntityMapper<Company> {
     public override object? ReadValue(Company entity, FieldMap fieldMap) {

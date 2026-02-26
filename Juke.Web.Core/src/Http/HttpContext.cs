@@ -1,22 +1,13 @@
-﻿using System.Text;
+﻿using System.Net.WebSockets;
+using System.Text;
 
-namespace Juke.Web.Core;
-
-public enum Method {
-    UNDEFINED = -1,
-    GET = 0,
-    POST = 1,
-    PUT = 2,
-    DELETE = 3,
-    PATCH = 4,   
-    OPTIONS = 5, 
-    HEAD = 6
-}
+namespace Juke.Web.Core.Http;
 
 public interface IHttpContext {
     IHttpRequest Request { get; }
     IHttpResponse Response { get; }
     IServiceProvider RequestServices { get; } 
+    IWebSocketManager WebSockets { get; }
 }
 
 public interface IHttpRequest {
@@ -39,6 +30,12 @@ public interface IHttpResponse {
     string? GetHeader(string key); // <-- Добавили метод для чтения заголовков
 }
 
+public interface IWebSocketManager 
+{
+    bool IsWebSocketRequest { get; }
+    Task<WebSocket> AcceptAsync();
+}
+
 public static class HttpResponseExtensions
 {
     public static void SetContentType(this IHttpResponse response, string contentType) {
@@ -56,7 +53,7 @@ public static class HttpResponseExtensions
 }
 
 public static class ServiceProviderExtensions {
-    public static T GetRequiredService<T>(this IServiceProvider provider) where T : notnull {
+    public static T Get<T>(this IServiceProvider provider) where T : notnull {
         var service = provider.GetService(typeof(T));
         if (service == null) {
             throw new InvalidOperationException($"Service '{typeof(T).Name}' is not registered.");

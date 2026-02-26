@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
-using Juke.Accessing;
 using Juke.Mapping;
 using Juke.Querying;
 using Juke.Sqlite;
 using Xunit.Abstractions;
 
-namespace Juke.Tests;
+namespace Juke.Tests.Orm;
 
 public class SqliteTest {
     private readonly ITestOutputHelper _testOutputHelper;

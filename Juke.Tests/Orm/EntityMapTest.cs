@@ -1,6 +1,4 @@
-﻿using Juke.Mapping;
-
-namespace Juke.Tests;
+﻿namespace Juke.Tests.Orm;
 
 public class EntityMapTest {
 

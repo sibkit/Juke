@@ -1,8 +1,7 @@
 ﻿using Juke.Linking;
 using Juke.Querying;
-using Juke.Sqlite.Sql;
 
-namespace Juke.Tests;
+namespace Juke.Tests.Orm;
 
 public class LinkManagerTest {
     [Fact]

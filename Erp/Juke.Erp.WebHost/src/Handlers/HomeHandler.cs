@@ -1,43 +1,49 @@
-﻿
-using Juke.Erp.WebHost.Components;
-using Juke.Web.Components.Fluid;
+﻿/* Juke.Erp.WebHost/Handlers/HomeHandler.cs */
+using System.Threading.Tasks;
 using Juke.Web.Core;
 using Juke.Web.Core.Handlers;
 using Juke.Web.Core.Render;
+using Juke.Erp.WebHost.Components;
+using Juke.Erp.WebHost.Pages;
+using Juke.Web.Components.Fluid;
+using Juke.Web.Core.Http;
 
 namespace Juke.Erp.WebHost.Handlers;
 
-public class HomeHandler : PageHandler 
+public class HomeHandler : PageHandler
 {
-    protected override async ValueTask<IPage> CreatePageAsync(IHttpContext context) 
+    protected override ValueTask<IPage> CreatePageAsync(IHttpContext context)
     {
-        // 1. Загрузка данных (В будущем здесь будет await dbContext...)
-        // Можно загружать параллельно!
-        var userTask = Task.FromResult("Alex (CEO)");
-        var salesTask = Task.FromResult(45200.50m);
+        // 1. Здесь в будущем будет обращение к EF Core для получения реальных данных
+        // var dbContext = context.RequestServices.Get<ErpDbContext>();
+        // var salesToday = await dbContext.Orders.Where(x => x.Date == DateTime.Today).SumAsync(x => x.Total);
         
-        await Task.WhenAll(userTask, salesTask);
+        var mockedSalesToday = 15400.50m;
 
-        // 2. Сборка UI
-        var page = new MasterPage 
+        // 2. Собираем дерево компонентов (Zero-Allocation рендеринг и сборка активов начнутся позже)
+        var page = new MasterPage
         {
-            Title = "Sibtronic ERP - Executive Dashboard",
+            Title = "Dashboard - Juke ERP",
+            Language = "en",
+            
             Header = new Header 
             { 
-                CurrentUser = userTask.Result,
-                CurrentTheme = "Dark" 
+                CurrentUser = "Admin", 
+                CurrentTheme = "Light" 
             },
-            Sidebar = new SidebarComponent(),
-            Footer = new FooterComponent(),
-            Breadcrumbs = new BreadcrumbComponent(),
-            MainContent = new DashboardContent
+            
+            MainContent = new DashboardContent 
             {
-                SalesToday = salesTask.Result,
-                ActiveUsers = 312,
-                SystemAlerts = 2
-            }
+                StoreId = "main-branch",
+                StoreName = "Central Store",
+                SalesToday = mockedSalesToday
+            },
+            
+             Sidebar = new SidebarComponent(),
+             Footer = new FooterComponent()
         };
 
-        return page;
+        // 3. Возвращаем ValueTask (избегаем выделения памяти под Task, так как операция синхронная)
+        return new ValueTask<IPage>(page);
     }
 }

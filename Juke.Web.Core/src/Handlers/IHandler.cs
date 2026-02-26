@@ -1,4 +1,6 @@
-﻿namespace Juke.Web.Core.Handlers;
+﻿using Juke.Web.Core.Http;
+
+namespace Juke.Web.Core.Handlers;
 
 public interface IHandler{}
 

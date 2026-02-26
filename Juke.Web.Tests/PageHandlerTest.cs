@@ -1,12 +1,13 @@
 ﻿/* Juke.Web.Tests/PageHandlerTests.cs */
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
-using Juke.Web.Core;
+using Juke.Web.Core.Assets;
 using Juke.Web.Core.Handlers;
+using Juke.Web.Core.Http;
 using Juke.Web.Core.Render;
+using StringContent = Juke.Web.Core.Assets.StringContent;
 
 namespace Juke.Web.Tests;
 
@@ -19,25 +20,11 @@ public class DummyResourceComponent : Component
         return ValueTask.CompletedTask;
     }
 
-    public override IReadOnlyList<IWebResource> GetResources() => [
-        new DummyWebResource("css/test.css", WebResourceType.Css, "1.0")
+    // Возвращаем плоский список ресурсов по-новому!
+    public override IReadOnlyList<IAsset> GetAssets() => [
+        new ExternalAsset("css/test.css", new StringContent(StringContentType.Css, "")),
+        new InlineAsset("init-script", InlinePosition.DOMContentLoaded, new StringContent(StringContentType.Js, "console.log('init');"))
     ];
-
-    public override IReadOnlyList<InlineScript> GetInlineScripts() => [
-        new InlineScript("init-script", "console.log('init');", ScriptPosition.DOMContentLoaded)
-    ];
-}
-
-public class DummyWebResource : IWebResource 
-{
-    public string RelativePath { get; }
-    public WebResourceType Type { get; }
-    public string VersionHash { get; }
-
-    public DummyWebResource(string path, WebResourceType type, string version) {
-        RelativePath = path; Type = type; VersionHash = version;
-    }
-    public Task<Stream> OpenStreamAsync() => Task.FromResult(Stream.Null);
 }
 
 public class DummyPage : Component, IPage 
@@ -46,13 +33,13 @@ public class DummyPage : Component, IPage
     public string Language => "en";
     
     public bool InjectResourcesCalled { get; private set; }
-    public int InjectedResourcesCount { get; private set; }
-    public int InjectedScriptsCount { get; private set; }
+    public int InjectedExternalCount { get; private set; }
+    public int InjectedInlineCount { get; private set; }
 
-    public void InjectResources(IReadOnlyList<IWebResource> resources, IReadOnlyList<InlineScript> scripts) {
+    public void InjectAssets(IReadOnlyList<ExternalAsset> externalAssets, IReadOnlyList<InlineAsset> inlineAssets) {
         InjectResourcesCalled = true;
-        InjectedResourcesCount = resources.Count;
-        InjectedScriptsCount = scripts.Count;
+        InjectedExternalCount = externalAssets.Count;
+        InjectedInlineCount = inlineAssets.Count;
     }
 
     public override ValueTask RenderAsync(TextWriter writer, IHttpContext context) {
@@ -67,7 +54,7 @@ public class TestPageHandler : PageHandler
 
     protected override ValueTask<IPage> CreatePageAsync(IHttpContext context) 
     {
-        // Симулируем компоновку (Unidirectional Data Flow)
+        // Симулируем компоновку
         var child = new DummyResourceComponent();
         PageInstance.AddChild(child);
         
@@ -84,8 +71,14 @@ public class PageHandlerTests
     {
         // Arrange
         var handler = new TestPageHandler();
+        
+        // Подготавливаем DI-контейнер для PageHandler (ему нужен AssetRegistry)
+        var services = new DummyServiceProvider();
+        services.AddService(new AssetRegistry());
+
         var context = new MockHttpContext { 
-            Request = new MockHttpRequest { Method = Method.GET, Path = "/" } 
+            Request = new MockHttpRequest { Method = Method.GET, Path = "/" },
+            RequestServices = services // Прокидываем сервисы
         };
 
         // Act
@@ -94,11 +87,11 @@ public class PageHandlerTests
         // Assert: Проверяем, что фаза инъекции была вызвана
         Assert.True(handler.PageInstance.InjectResourcesCalled);
         
-        // Assert: Проверяем, что ресурсы от дочерних компонентов дошли до корня (Page)
-        Assert.Equal(1, handler.PageInstance.InjectedResourcesCount);
-        Assert.Equal(1, handler.PageInstance.InjectedScriptsCount);
+        // Assert: Проверяем, что Pattern Matching правильно разложил ассеты по корзинам
+        Assert.Equal(1, handler.PageInstance.InjectedExternalCount);
+        Assert.Equal(1, handler.PageInstance.InjectedInlineCount);
 
-        // Assert: Проверяем, что рендер записал данные в поток (StreamWriter отработал)
+        // Assert: Проверяем, что рендер записал данные в поток
         context.Response.Body.Position = 0;
         using var reader = new StreamReader(context.Response.Body);
         var resultHtml = await reader.ReadToEndAsync();

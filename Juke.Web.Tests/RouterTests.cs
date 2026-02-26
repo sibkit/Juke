@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Juke.Web.Core;
 using Juke.Web.Core.Handlers;
+using Juke.Web.Core.Http;
 using Juke.Web.Core.Routing;
 
 namespace Juke.Web.Tests;
@@ -73,7 +74,9 @@ public class MockHttpResponse : IHttpResponse
 
 public class DummyServiceProvider : IServiceProvider 
 {
-    public object? GetService(Type serviceType) => null;
+    private readonly Dictionary<Type, object> _services = new();
+    public void AddService<T>(T service) where T : notnull => _services[typeof(T)] = service;
+    public object? GetService(Type serviceType) => _services.GetValueOrDefault(serviceType);
 }
 
 public class MockHttpContext : IHttpContext 
@@ -81,8 +84,9 @@ public class MockHttpContext : IHttpContext
     public IHttpRequest Request { get; set; } = new MockHttpRequest();
     public IHttpResponse Response { get; } = new MockHttpResponse();
     
-    // Добавлено для соответствия последнему контракту IHttpContext
-    public IServiceProvider RequestServices { get; } = new DummyServiceProvider(); 
+    // Теперь мы можем прокидывать сервисы
+    public IServiceProvider RequestServices { get; set; } = new DummyServiceProvider(); 
+    public IWebSocketManager WebSockets { get; set; } = null!; // Заглушка, если сокеты не тестируем
 }
 
 // --- Сами тесты ---

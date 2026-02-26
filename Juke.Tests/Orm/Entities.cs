@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-
-namespace Juke.Tests;
+﻿namespace Juke.Tests.Orm;
 
 public class Company {
     public long? ID { get; set; }
