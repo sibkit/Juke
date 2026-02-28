@@ -52,7 +52,9 @@ public class MockHttpRequest : IHttpRequest
 
     private readonly Dictionary<string, string> _headers = new(StringComparer.OrdinalIgnoreCase);
     
-    public string? GetHeader(string key) => _headers.TryGetValue(key, out var val) ? val : null;
+    public string? GetHeader(string key) => _headers.GetValueOrDefault(key);
+    public bool HasFormContentType { get; } = false;
+    public IEnumerable<IUploadedFile> Files { get; } = [];
     public void SetHeaderForTest(string key, string value) => _headers[key] = value;
 }
 
@@ -67,8 +69,12 @@ public class MockHttpResponse : IHttpResponse
         InternalHeaders[key] = value;
     }
 
+    public void SetHeader(string key, string value) {
+        InternalHeaders[key] = value;
+    }
+
     public string? GetHeader(string key) {
-        return InternalHeaders.TryGetValue(key, out var value) ? value : null;
+        return InternalHeaders.GetValueOrDefault(key);
     }
 }
 

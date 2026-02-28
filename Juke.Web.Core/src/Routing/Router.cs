@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Juke.Web.Core.Handlers;
+﻿using Juke.Web.Core.Handlers;
 using Juke.Web.Core.Http;
 
 namespace Juke.Web.Core.Routing;
@@ -12,10 +11,7 @@ public class Router {
         RootNode = rootNode;
     }
     
-    
-    
     public IHandler? Resolve(IHttpContext context) {
-        //IHandler? handler;
         
         var method = context.Request.Method;
         if (method == Method.UNDEFINED) {

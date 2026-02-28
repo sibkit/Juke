@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Fluid.Core" Version="2.31.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Flux.Pcb\Flux.Pcb.csproj" />
+      <ProjectReference Include="..\Juke.Web.AspNetCore\Juke.Web.AspNetCore.csproj" />
+      <ProjectReference Include="..\Juke.Web.Components\Juke.Web.Components.csproj" />
+      <ProjectReference Include="..\Juke.Web.Core\Juke.Web.Core.csproj" />
+      <ProjectReference Include="..\Flux.Pcb\Flux.Pcb.csproj" />
+      <ProjectReference Include="..\Juke.Web.AspNetCore\Juke.Web.AspNetCore.csproj" />
+      <ProjectReference Include="..\Juke.Web.Components\Juke.Web.Components.csproj" />
+      <ProjectReference Include="..\Juke.Web.Core\Juke.Web.Core.csproj" />
+      <ProjectReference Include="..\Juke.Web.Fluid\Juke.Web.Fluid.csproj" />
+      <ProjectReference Include="..\Juke\Juke.csproj" />
+    </ItemGroup>
+
+</Project>
